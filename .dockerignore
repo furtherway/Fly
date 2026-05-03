@@ -1,0 +1,14 @@
+.git
+.gitignore
+.playwright
+__pycache__
+outputs
+*.pyc
+*.pyo
+.env
+.env.local
+.vscode
+.idea
+.DS_Store
+README_RENDER.md
+.env.example
