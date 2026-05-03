@@ -1,0 +1,49 @@
+# ── Python ────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ── Entornos virtuales ────────────────────────────
+venv/
+env/
+ENV/
+.venv/
+.env
+.env.local
+.env.production
+
+# ── Playwright (se instala en build de Render) ────
+.playwright/
+.playwright-browsers/
+
+# ── Outputs generados por el análisis ─────────────
+outputs/
+*.xlsx
+analisis_*.xlsx
+
+# ── Logs ──────────────────────────────────────────
+*.log
+logs/
+
+# ── Editor / OS ───────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Credenciales (NUNCA commitear) ────────────────
+serviceAccountKey.json
+*.pem
+*.key
+secrets.json
+
+# ── Render ────────────────────────────────────────
+.render/

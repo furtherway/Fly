@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────
+#  render.yaml — Blueprint de despliegue para Render
+# ─────────────────────────────────────────────────────────────────────
+#  Permite "Deploy to Render" con un clic desde GitHub.
+#  Doc oficial: https://render.com/docs/blueprint-spec
+# ─────────────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: tim-trademark-insights
+    runtime: python
+    region: oregon              # opciones: oregon | frankfurt | singapore | ohio | virginia
+    plan: starter               # 'free' funciona pero duerme tras 15 min y tiene 512MB.
+                                # Chromium pide ~400MB; recomiendo 'starter' (≈$7/mes, 512MB sin sleep)
+                                # o 'standard' (2GB) si scrapeas muchas clases en paralelo.
+
+    # ── Build ──────────────────────────────────────────────────────
+    buildCommand: "./build.sh"
+
+    # ── Start ──────────────────────────────────────────────────────
+    # Gunicorn con worker 'gthread' para soportar Server-Sent Events
+    # (los streams de log que muestra el wizard en tiempo real).
+    # --timeout 0 desactiva el timeout por request: scraping puede
+    # tardar varios minutos y un timeout cortaría el SSE.
+    startCommand: "gunicorn app:app --worker-class gthread --workers 1 --threads 8 --timeout 0 --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -"
+
+    # ── Salud ──────────────────────────────────────────────────────
+    healthCheckPath: /
+
+    # ── Auto-deploy en cada push a main ────────────────────────────
+    autoDeploy: true
+
+    # ── Variables de entorno ───────────────────────────────────────
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+      # Playwright: que el browser quede dentro del proyecto para que
+      # persista entre build y runtime sin reinstalarse.
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /opt/render/project/src/.playwright
+
+      # Flask
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHONUNBUFFERED        # Logs en tiempo real
+        value: "1"
+
+      # Supabase — RELLENA en el dashboard de Render (NO commit!)
+      - key: SUPABASE_URL
+        sync: false                  # 'sync: false' = se pide manualmente, no se versiona
+      - key: SUPABASE_ANON_KEY
+        sync: false
+
+    # ── Disco persistente (opcional) ───────────────────────────────
+    # Útil si quieres que los .xlsx generados sobrevivan reinicios.
+    # Comenta si usas el plan 'free' (no soporta disks).
+    disk:
+      name: tim-data
+      mountPath: /opt/render/project/src/outputs
+      sizeGB: 1
