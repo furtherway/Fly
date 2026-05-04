@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 """
-Trademark Insights MÃƒÂ©xico Ã¢â‚¬â€ TIM
+Trademark Insights México — TIM
 Flask server: ORCH_ONE + Redes Sociales + Dominios + MUA
-Corre: python app.py  Ã¢â€ â€™  http://localhost:5050
+Corre: python app.py  →  http://localhost:5050
 """
 import json, os, queue, subprocess, sys, threading
 from datetime import datetime
 from pathlib import Path
 from flask import Flask, Response, send_file, request, render_template_string
 
-# Ã¢â€â‚¬Ã¢â€â‚¬ Playwright: asegura que el browser estÃƒÂ© instalado al arrancar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ── Playwright: asegura que el browser esté instalado al arrancar ─────────────
 _PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PW_PATH = os.path.join(_PROJECT_DIR, ".playwright")
 os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", _PW_PATH)
 
 def _ensure_playwright_browser():
-    """Instala Chromium si no estÃƒÂ¡ disponible. Se ejecuta una sola vez al arrancar."""
+    """Instala Chromium si no está disponible. Se ejecuta una sola vez al arrancar."""
     try:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            # Si esto funciona, el browser ya estÃƒÂ¡ instalado
+            # Si esto funciona, el browser ya está instalado
             browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
             browser.close()
         print("[startup] Playwright Chromium OK")
     except Exception:
-        print("[startup] Playwright Chromium no encontrado Ã¢â‚¬â€ instalandoÃ¢â‚¬Â¦")
+        print("[startup] Playwright Chromium no encontrado — instalando…")
         try:
             env = {**os.environ, "PLAYWRIGHT_BROWSERS_PATH": _PW_PATH}
             subprocess.run(
@@ -72,7 +72,7 @@ HTML = r"""
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>TIM Ã¢â‚¬â€ Trademark Insights MÃƒÂ©xico</title>
+<title>TIM — Trademark Insights México</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Raleway:wght@300;400;500;600;700&family=Outfit:wght@300;400;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -83,9 +83,9 @@ HTML = r"""
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-   DESIGN TOKENS Ã¢â‚¬â€ Executive Dark / Red accent
-Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS — Executive Dark / Red accent
+═══════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --white:#ffffff;
@@ -123,7 +123,7 @@ HTML = r"""
 }
 html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Layout Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Layout ── */
 .app-shell{display:flex;flex-direction:column;min-height:100vh}
 .topbar{background:#1540F0;border-bottom:3px solid rgba(255,255,255,.15);padding:0 28px;display:flex;align-items:center;gap:12px;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(21,64,240,.45)}
 .topbar-logo{display:flex;align-items:center;text-decoration:none;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
@@ -140,11 +140,11 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .btn-nuevo:hover{background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.88);box-shadow:0 4px 18px rgba(0,0,0,.28)}
 .main{max-width:1200px;margin:0 auto;padding:32px 24px 80px;width:100%}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Cards Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Cards ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
 .card-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Wizard step bar Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Wizard step bar ── */
 .wiz-bar{display:flex;align-items:center;margin-bottom:32px;position:relative;padding:0 16px}
 .wiz-bar::before{content:'';position:absolute;top:16px;left:calc(16px + 44px);right:calc(16px + 44px);height:1px;background:var(--border2);z-index:0}
 .wiz-fill{position:absolute;top:16px;left:calc(16px + 44px);height:1px;background:var(--blue);z-index:1;transition:width .5s cubic-bezier(.4,0,.2,1);width:0}
@@ -156,14 +156,14 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .wiz-label.active{color:var(--blue)}
 .wiz-label.done{color:var(--green)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Wizard steps Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Wizard steps ── */
 .wiz-step{display:none}
 .wiz-step.active{display:block;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .btn-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:20px;transition:all .2s}
 .btn-back:hover{border-color:var(--blue);color:var(--blue)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Giro selector Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Giro selector ── */
 .giro-search-wrap{position:relative;margin-bottom:14px}
 .giro-search{width:100%;padding:12px 16px 12px 40px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;font-family:var(--sans)}
 .giro-search:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,64,240,.12)}
@@ -219,7 +219,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .gfp.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .giro-empty{padding:32px;text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Step 1 hero Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Step 1 hero ── */
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 @media(max-width:768px){.hero-grid{grid-template-columns:1fr}}
 .hero-tagline{padding-top:8px}
@@ -229,9 +229,9 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .tagline-body{font-size:13px;color:var(--muted);line-height:1.7;max-width:340px}
 .tagline-checklist{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:8px}
 .tagline-checklist li{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text2)}
-.tagline-checklist li::before{content:'Ã¢â€ â€™';color:var(--blue);font-family:var(--mono);font-weight:700;flex-shrink:0;margin-top:1px}
+.tagline-checklist li::before{content:'→';color:var(--blue);font-family:var(--mono);font-weight:700;flex-shrink:0;margin-top:1px}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Analysis type selector Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Analysis type selector ── */
 .analysis-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:20px}
 .at-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;user-select:none;background:var(--surface2)}
 .at-card:hover{border-color:rgba(21,64,240,.4);background:rgba(21,64,240,.06)}
@@ -244,9 +244,9 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .at-desc{font-size:10px;color:var(--muted)}
 .at-check{width:18px;height:18px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;background:transparent}
 .at-card.selected .at-check{background:var(--blue);border-color:var(--blue)}
-.at-card.selected .at-check::after{content:'Ã¢Å“â€œ';color:#fff;font-size:10px;font-weight:700}
+.at-card.selected .at-check::after{content:'✓';color:#fff;font-size:10px;font-weight:700}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Brand inputs Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Brand inputs ── */
 .brand-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
 .brand-row{display:flex;align-items:center;gap:8px}
 .brand-num{width:24px;height:24px;border-radius:50%;background:rgba(21,64,240,.15);border:1px solid rgba(21,64,240,.4);color:var(--blue);font-family:var(--mono);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -260,7 +260,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .btn-add-brand{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
 .btn-add-brand:hover{border-color:rgba(21,64,240,.4);color:var(--blue);background:rgba(21,64,240,.06)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Favorites Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Favorites ── */
 .fav-grid{display:flex;flex-wrap:wrap;gap:8px;min-height:32px;margin-bottom:12px}
 .fav-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(21,64,240,.1);border:1px solid rgba(21,64,240,.25);border-radius:20px;font-size:11px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s}
 .fav-chip:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -269,7 +269,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .fav-empty{font-size:12px;color:var(--muted2);padding:4px 0;font-style:italic}
 .session-btns{display:flex;gap:8px;flex-wrap:wrap}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Buttons Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Buttons ── */
 .btn-primary{width:100%;padding:15px;background:var(--blue);border:none;border-radius:var(--radius-sm);color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transform:translateX(-100%);transition:.5s}
 .btn-primary:hover{background:var(--blue-hover)}
@@ -287,7 +287,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Class mode buttons Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Class mode buttons ── */
 .class-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .mode-btn{padding:11px 8px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-align:center;transition:all .2s}
 .mode-btn:hover{border-color:var(--blue);color:var(--blue)}
@@ -310,7 +310,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .cls-dup-warn{font-size:11px;color:var(--red);margin-top:6px;display:none}
 .cls-dup-warn.show{display:block}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Per-brand class toggle Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Per-brand class toggle ── */
 .pbmode-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .btn-pbmode{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
 .btn-pbmode:hover,.btn-pbmode.active{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
@@ -326,7 +326,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .pb-summary{font-size:11px;color:var(--muted);flex-shrink:0}
 .pb-summary.has{color:var(--green)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Toggles Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Toggles ── */
 .toggles-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tog{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;transition:border-color .2s}
 .tog:hover{border-color:var(--blue)}
@@ -337,7 +337,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .tog input:checked~.track{background:var(--blue)}
 .tog input:checked~.track::after{transform:translateX(16px);background:#fff}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Criteria config Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Criteria config ── */
 .cfg-btns{display:flex;gap:8px;margin-bottom:14px}
 .cfg-btn{flex:1;padding:10px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
 .cfg-btn:hover{border-color:var(--blue);color:var(--blue)}
@@ -360,11 +360,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .step-btn:hover{background:var(--blue-hover)}
 .step-val{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--navy);min-width:20px;text-align:center}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Niza link button Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Niza link button ── */
 .niza-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:#fff;border:1.5px solid var(--blue-mid);border-radius:var(--radius-sm);color:var(--blue);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:all .2s;margin-bottom:14px}
 .niza-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:var(--shadow)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Progress bar Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Progress bar ── */
 .prog-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;display:none}
 .prog-wrap.show{display:block;animation:fadeUp .3s ease}
 .prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -381,11 +381,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .step-pill.error{border-color:rgba(248,113,113,.4);color:#f87171}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Results area Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Results area ── */
 #results-area{display:none;margin-top:8px}
 #results-area.show{display:block}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Brand result tabs Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Brand result tabs ── */
 .brand-tabs-bar{display:flex;gap:0;border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;margin-bottom:0}
 .brand-tabs-bar::-webkit-scrollbar{display:none}
 .btab{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .2s;white-space:nowrap;background:transparent;border-left:none;border-right:none;border-top:none}
@@ -399,7 +399,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .btab-content{display:none;animation:fadeUp .3s ease}
 .btab-content.active{display:block}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Per-brand analysis accordion Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Per-brand analysis accordion ── */
 .analysis-accordion{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
 .aa-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--surface2);cursor:pointer;border-bottom:1px solid transparent;transition:all .2s;user-select:none}
 .aa-header:hover{background:var(--surface)}
@@ -415,7 +415,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .aa-body.open{display:block;animation:fadeUp .25s ease}
 .aa-hint{font-size:11px;color:var(--muted);text-align:center;padding:6px 0 2px;font-style:italic}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Result sections (inside accordion) Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Result sections (inside accordion) ── */
 .rs{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden}
 .rs-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
 .rs-icon{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
@@ -423,7 +423,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .rs-count{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:20px;white-space:nowrap}
 .rs-actions{display:flex;gap:6px;margin-left:auto}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Tables Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Tables ── */
 .tbl-wrap{overflow-x:auto;max-height:400px;overflow-y:auto}
 table{width:100%;border-collapse:collapse}
 thead th{background:#e8e8e8;position:sticky;top:0;z-index:2;padding:9px 12px;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.5);border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;font-family:var(--mono)}
@@ -433,7 +433,7 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.02)}
 td{padding:9px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text2)}
 td.mono{font-family:var(--mono)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Chips Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Chips ── */
 .chip{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);letter-spacing:.5px}
 .chip-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
 .chip-orange{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa}
@@ -445,7 +445,7 @@ td.mono{font-family:var(--mono)}
 .tag-warn{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
 .empty-state{padding:40px;text-align:center;color:var(--muted2);font-size:12px;letter-spacing:1px;text-transform:uppercase}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Stats KPI strip Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Stats KPI strip ── */
 .kpi-strip{display:flex;gap:0;border-radius:var(--radius);overflow:hidden;margin-bottom:16px;background:#f0f0f0;border:1px solid var(--border);box-shadow:var(--shadow)}
 .kpi-item{flex:1;text-align:center;padding:16px 10px;border-right:1px solid var(--border)}
 .kpi-item:last-child{border-right:none}
@@ -457,7 +457,7 @@ td.mono{font-family:var(--mono)}
 .kpi-num.orange{color:#fb923c}
 .kpi-num.green{color:#4ade80}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Per-class stats Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Per-class stats ── */
 .cls-toggle-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);transition:all .2s;margin-top:14px}
 .cls-toggle-btn:hover{border-color:var(--blue);color:var(--blue)}
 .cls-toggle-btn.open{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
@@ -472,7 +472,7 @@ td.mono{font-family:var(--mono)}
 .cls-kpi-num.g{color:var(--green)}
 .cls-kpi-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Conflict ticker Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Conflict ticker ── */
 .cls-ticker-wrap{overflow:hidden}
 .cls-ticker-controls{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
 .cls-ticker-info{font-size:10px;color:var(--muted);letter-spacing:.5px}
@@ -495,7 +495,7 @@ td.mono{font-family:var(--mono)}
 .t-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all .2s}
 .t-dot.active{background:var(--blue);transform:scale(1.3)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Conflict status bar Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Conflict status bar ── */
 .conf-status-bar{display:none;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;gap:10px;background:var(--surface2)}
 .conf-status-bar.show{display:flex}
 .cgs-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -504,7 +504,7 @@ td.mono{font-family:var(--mono)}
 .cgs-text{font-size:12px;font-weight:600;font-family:var(--mono)}
 .cgs-text.ok{color:var(--green)}.cgs-text.nok{color:var(--red)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Single class card Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Single class card ── */
 .cls-card-single{border-radius:var(--radius-sm);padding:16px;border:1.5px solid}
 .cls-card-single.ok{border-color:var(--green-border);background:var(--green-bg)}
 .cls-card-single.nok{border-color:var(--red-border);background:var(--red-bg)}
@@ -514,7 +514,7 @@ td.mono{font-family:var(--mono)}
 .cls-marks-table th{padding:6px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--border)}
 .cls-marks-table td{padding:7px 10px;font-size:11px;border-bottom:1px solid var(--border);color:var(--text2)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Ver todos modal Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Ver todos modal ── */
 .modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;backdrop-filter:blur(3px);align-items:center;justify-content:center}
 .modal-back.show{display:flex;animation:fadeIn .2s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -533,7 +533,7 @@ td.mono{font-family:var(--mono)}
 .vt-table th,.vt-table td{padding:5px 8px;font-size:10px}
 .vt-empty{font-size:11px;color:var(--green);font-style:italic;padding:6px 0}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Criteria modal Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Criteria modal ── */
 .crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
 .crit-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
 .crit-num{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--blue);margin-bottom:4px}
@@ -543,7 +543,7 @@ td.mono{font-family:var(--mono)}
 .concesion-rule{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius-sm);padding:14px;font-size:12px;color:var(--navy2)}
 .rule-hl{font-weight:700;color:var(--blue)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Social / Domain / MUA tool results Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Social / Domain / MUA tool results ── */
 .avail-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 10px;border-radius:20px;border:1px solid}
 .avail-pill.ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
 .avail-pill.taken{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
@@ -559,7 +559,7 @@ td.mono{font-family:var(--mono)}
 .domain-card:hover{box-shadow:var(--shadow)}
 .domain-name{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--navy);flex:1}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Compare section Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Compare section ── */
 .compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
 .cmp-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm)}
 .cmp-brand{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px}
@@ -582,7 +582,7 @@ td.mono{font-family:var(--mono)}
 .cmp-pct{font-family:var(--mono);font-size:10px;font-weight:600;min-width:36px;text-align:right}
 .cmp-count{font-size:9px;color:var(--muted);min-width:52px;text-align:right}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Registration Gate Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Registration Gate ── */
 .reg-gate{position:fixed;inset:0;background:rgba(10,10,20,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
 .reg-gate.done{display:none!important}
 .reg-box{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 32px 100px rgba(0,0,0,.4);max-width:680px;width:100%;max-height:92vh;display:flex;flex-direction:column}
@@ -606,12 +606,12 @@ td.mono{font-family:var(--mono)}
 .reg-btn-enter{padding:15px 44px;background:#1540F0;border:none;border-radius:6px;color:#fff;font-family:'Courier New',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-top:4px}
 .reg-btn-enter:hover{background:#0f34cc}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Toast Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Toast ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:#1a1a1a;border:1px solid var(--border2);color:#fff;font-size:12px;font-weight:500;padding:10px 20px;border-radius:var(--radius-sm);z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-md)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.info{background:#111;border-color:var(--blue)}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Misc Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Misc ── */
 .section-label{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .stat-pill{text-align:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 14px}
@@ -623,7 +623,7 @@ td.mono{font-family:var(--mono)}
 /* Per-brand in class mode */
 .pb-mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ 2Ãƒâ€”2 Results Grid Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── 2×2 Results Grid ── */
 .results-grid-2x2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;align-items:start}
 @media(max-width:900px){.results-grid-2x2{grid-template-columns:1fr}}
 .result-panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
@@ -633,7 +633,7 @@ td.mono{font-family:var(--mono)}
 .result-panel-body::-webkit-scrollbar{width:4px}
 .result-panel-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Auth Panel Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Auth Panel ── */
 .auth-panel{position:fixed;top:64px;right:20px;z-index:9999;background:#ffffff;border:1px solid var(--border2);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md);width:290px;transition:all .3s}
 .auth-panel.hidden{display:none}
 .auth-panel-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
@@ -648,7 +648,7 @@ td.mono{font-family:var(--mono)}
 .auth-user-info{font-size:12px;color:var(--text2);margin-bottom:12px;padding:8px;background:var(--surface2);border-radius:var(--radius-sm)}
 .auth-user-email{font-weight:600;color:var(--text);font-size:13px;word-break:break-all}
 .auth-user-role{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-/* Ã¢â€â‚¬Ã¢â€â‚¬ SIGA Period Banner Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── SIGA Period Banner ── */
 .siga-period-banner{display:flex;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1px solid #fde68a;border-radius:var(--radius-sm);margin-bottom:14px;flex-wrap:wrap}
 .siga-period-icon{font-size:16px;flex-shrink:0}
 .siga-period-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#92400e;flex-shrink:0}
@@ -658,7 +658,7 @@ td.mono{font-family:var(--mono)}
 .btn-auth:hover{background:rgba(255,255,255,.12);border-color:#ffffff}
 .btn-auth.logged{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:#86efac}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Nota Legal Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Nota Legal ── */
 .nota-legal-wrap{margin-bottom:24px;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
 .nota-legal-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface2);border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);transition:background .2s}
 .nota-legal-toggle:hover{background:var(--surface)}
@@ -671,7 +671,7 @@ td.mono{font-family:var(--mono)}
 .nota-legal-body a{color:var(--blue);text-decoration:none;word-break:break-all}
 .nota-legal-body a:hover{text-decoration:underline}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Responsive: tablet Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Responsive: tablet ── */
 @media(max-width:768px){
   .topbar{padding:0 14px;height:56px}
   .topbar-logo{position:static;transform:none;margin:0 auto}
@@ -701,7 +701,7 @@ td.mono{font-family:var(--mono)}
   .export-row{flex-wrap:wrap;justify-content:flex-start}
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Responsive: mÃƒÂ³vil Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Responsive: móvil ── */
 @media(max-width:480px){
   .topbar{height:auto;padding:10px 12px;flex-wrap:nowrap;gap:8px}
   .topbar-logo{position:static;transform:none;flex:1;justify-content:center}
@@ -740,12 +740,12 @@ td.mono{font-family:var(--mono)}
 </head>
 <body>
 
-<!-- Ã¢â€¢ÂÃ¢â€¢Â REGISTRATION GATE Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<!-- ══ REGISTRATION GATE ══════════════════════════════════ -->
 <div class="reg-gate" id="reg-gate">
   <div class="reg-box">
     <div class="reg-box-hdr">
       <div class="reg-box-title">Think<span>LAB</span></div>
-      <div class="reg-box-sub">Acceso Ã‚Â· Completa el registro para continuar</div>
+      <div class="reg-box-sub">Acceso · Completa el registro para continuar</div>
     </div>
     <div class="reg-box-body">
       <!-- Spinner mientras carga el iframe -->
@@ -753,12 +753,12 @@ td.mono{font-family:var(--mono)}
         <div class="reg-spin"></div>
         <div class="reg-load-txt">Cargando formulario...</div>
       </div>
-      <!-- Pantalla de agradecimiento (post-envÃƒÂ­o) -->
+      <!-- Pantalla de agradecimiento (post-envío) -->
       <div class="reg-thanks" id="reg-thanks">
-        <div class="reg-check-circle">Ã¢Å“â€œ</div>
-        <div class="reg-thanks-title">Ã‚Â¡Registro completado!</div>
-        <div class="reg-thanks-sub">Gracias por registrarte. Ya tienes acceso completo a ThinkLab Ã¢â‚¬â€ la herramienta de anÃƒÂ¡lisis de marcas de Trademark Insights MÃƒÂ©xico.</div>
-        <button class="reg-btn-enter" onclick="enterApp()">ENTRAR A LA APLICACIÃƒâ€œN Ã¢â€ â€™</button>
+        <div class="reg-check-circle">✓</div>
+        <div class="reg-thanks-title">¡Registro completado!</div>
+        <div class="reg-thanks-sub">Gracias por registrarte. Ya tienes acceso completo a ThinkLab — la herramienta de análisis de marcas de Trademark Insights México.</div>
+        <button class="reg-btn-enter" onclick="enterApp()">ENTRAR A LA APLICACIÓN →</button>
       </div>
       <!-- Google Form -->
       <iframe
@@ -768,14 +768,14 @@ td.mono{font-family:var(--mono)}
         frameborder="0"
         marginheight="0"
         marginwidth="0"
-      >CargandoÃ¢â‚¬Â¦</iframe>
+      >Cargando…</iframe>
     </div>
   </div>
 </div>
 
 <div class="app-shell">
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ Topbar Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── Topbar ── -->
 <nav class="topbar">
   <a class="topbar-logo" href="#">
     <div class="wordmark">Facty</div>
@@ -787,20 +787,20 @@ td.mono{font-family:var(--mono)}
     </div>
   </a>
   <div class="topbar-spacer"></div>
-  <button class="btn-nuevo" onclick="iniciarNuevo()">Ã¢â€ Âº NUEVO ANÃƒÂLISIS</button>
+  <button class="btn-nuevo" onclick="iniciarNuevo()">↺ NUEVO ANÁLISIS</button>
 </nav>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ Auth Panel Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── Auth Panel ── -->
 <div class="auth-panel hidden" id="auth-panel">
   <div class="auth-panel-title">
     <span id="auth-panel-label">Acceso a tu cuenta</span>
-    <button class="auth-close" onclick="toggleAuthPanel()">Ã¢Å“â€¢</button>
+    <button class="auth-close" onclick="toggleAuthPanel()">✕</button>
   </div>
 
   <!-- Guest view -->
   <div id="auth-guest">
-    <input class="auth-input" id="auth-email" type="email" placeholder="Correo electrÃƒÂ³nico" autocomplete="email"/>
-    <input class="auth-input" id="auth-password" type="password" placeholder="ContraseÃƒÂ±a (mÃƒÂ­n. 6 caracteres)" autocomplete="current-password"/>
+    <input class="auth-input" id="auth-email" type="email" placeholder="Correo electrónico" autocomplete="email"/>
+    <input class="auth-input" id="auth-password" type="password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="current-password"/>
     <div class="auth-btns">
       <button class="btn-sm" onclick="loginUser()" style="flex:1">Entrar</button>
       <button class="btn-sm outline" onclick="registerUser()" style="flex:1">Registrarse</button>
@@ -814,30 +814,30 @@ td.mono{font-family:var(--mono)}
       <div class="auth-user-email" id="auth-user-email"></div>
       <div class="auth-user-role">Cuenta activa</div>
     </div>
-    <button class="btn-danger-sm" onclick="logoutUser()" style="width:100%">Cerrar sesiÃƒÂ³n</button>
+    <button class="btn-danger-sm" onclick="logoutUser()" style="width:100%">Cerrar sesión</button>
   </div>
 </div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ Main content Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── Main content ── -->
 <div class="main">
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ Nota Legal Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── Nota Legal ── -->
 <div class="nota-legal-wrap">
   <button class="nota-legal-toggle" onclick="toggleNotaLegal()">
-    <span>Ã°Å¸â€œâ€ž NOTA LEGAL</span>
-    <span class="nota-legal-chevron" id="nota-legal-chevron">Ã¢â€“Â¸</span>
+    <span>📄 NOTA LEGAL</span>
+    <span class="nota-legal-chevron" id="nota-legal-chevron">▸</span>
   </button>
   <div class="nota-legal-body" id="nota-legal-body">
-    <p>Al registrarte y usar Trademark Insights MÃƒÂ©xico (TIM) aceptas nuestros TÃƒÂ©rminos y Condiciones y Aviso de Privacidad.</p>
-    <p>TIM es una herramienta gratuita de consulta indicativa. Sus resultados no constituyen asesorÃƒÂ­a legal ni garantizan la registrabilidad de un signo distintivo, y pueden cambiar en cualquier momento sin previo aviso.</p>
-    <p>Como contraprestaciÃƒÂ³n al uso gratuito, autorizas la transferencia onerosa de tus datos personales y de la informaciÃƒÂ³n de tus consultas a terceros.</p>
+    <p>Al registrarte y usar Trademark Insights México (TIM) aceptas nuestros Términos y Condiciones y Aviso de Privacidad.</p>
+    <p>TIM es una herramienta gratuita de consulta indicativa. Sus resultados no constituyen asesoría legal ni garantizan la registrabilidad de un signo distintivo, y pueden cambiar en cualquier momento sin previo aviso.</p>
+    <p>Como contraprestación al uso gratuito, autorizas la transferencia onerosa de tus datos personales y de la información de tus consultas a terceros.</p>
     <p>Puedes ejercer tus derechos ARCO en cualquier momento escribiendo a <a href="mailto:consultas@werfurther.com">consultas@werfurther.com</a>.</p>
-    <p>Ã°Å¸â€œâ€ž Consultar T&amp;C y Aviso de Privacidad completos en <a href="https://coda.io/d/_dz3m9xX6c8V/TRADEMARK-INSIGHTS-MEXICO_supg2Gm_" target="_blank" rel="noopener">https://coda.io/d/_dz3m9xX6c8V/TRADEMARK-INSIGHTS-MEXICO_supg2Gm_</a></p>
+    <p>📄 Consultar T&amp;C y Aviso de Privacidad completos en <a href="https://coda.io/d/_dz3m9xX6c8V/TRADEMARK-INSIGHTS-MEXICO_supg2Gm_" target="_blank" rel="noopener">https://coda.io/d/_dz3m9xX6c8V/TRADEMARK-INSIGHTS-MEXICO_supg2Gm_</a></p>
     <p>Responsable: CRRNZ Strategic Advisors, S.A.S. de C.V.</p>
   </div>
 </div>
 
-<!-- Ã¢â€¢ÂÃ¢â€¢Â WIZARD Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<!-- ══ WIZARD ══════════════════════════════════════════════ -->
 
 <!-- Step bar -->
 <div class="wiz-bar" id="wiz-bar" style="margin-top:28px">
@@ -852,11 +852,11 @@ td.mono{font-family:var(--mono)}
   </div>
   <div class="wiz-node">
     <div class="wiz-circle" id="wc-3">3</div>
-    <span class="wiz-label" id="wl-3">Lanzar AnÃƒÂ¡lisis</span>
+    <span class="wiz-label" id="wl-3">Lanzar Análisis</span>
   </div>
 </div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ STEP 1 Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ─── STEP 1 ─────────────────────────────────────────── -->
 <div class="wiz-step active" id="ws-1">
   <div class="hero-grid">
 
@@ -864,7 +864,7 @@ td.mono{font-family:var(--mono)}
     <div>
       <!-- Brand inputs -->
       <div class="card" style="margin-bottom:14px">
-        <div class="card-title">Nueva BÃƒÂºsqueda <span id="fav-badge" style="font-weight:400;color:var(--muted)"></span></div>
+        <div class="card-title">Nueva Búsqueda <span id="fav-badge" style="font-weight:400;color:var(--muted)"></span></div>
         <div class="brand-list" id="brand-list">
           <div class="brand-row" data-idx="0">
             <span class="brand-num">1</span>
@@ -875,85 +875,85 @@ td.mono{font-family:var(--mono)}
 
       <!-- Analysis type selection -->
       <div class="card" style="margin-bottom:20px">
-        <div class="card-title">Ã‚Â¿QuÃƒÂ© quieres verificar sobre tu marca?</div>
+        <div class="card-title">¿Qué quieres verificar sobre tu marca?</div>
         <div class="analysis-types">
           <div class="at-card selected" id="at-marca" onclick="toggleAnalysis('marca')">
-            <div class="at-icon">Ã¢Å¡â€“Ã¯Â¸Â</div>
+            <div class="at-icon">⚖️</div>
             <div class="at-info">
-              <div class="at-name">Ã‚Â¿Es Registrable?</div>
-              <div class="at-desc">Conflictos IMPI Ã‚Â· ML</div>
+              <div class="at-name">¿Es Registrable?</div>
+              <div class="at-desc">Conflictos IMPI · ML</div>
             </div>
             <div class="at-check" id="ac-marca"></div>
           </div>
           <div class="at-card selected" id="at-social" onclick="toggleAnalysis('social')">
-            <div class="at-icon">Ã°Å¸â€œÂ±</div>
+            <div class="at-icon">📱</div>
             <div class="at-info">
-              <div class="at-name">Ã‚Â¿Visible en Redes?</div>
+              <div class="at-name">¿Visible en Redes?</div>
               <div class="at-desc">25 plataformas</div>
             </div>
             <div class="at-check" id="ac-social"></div>
           </div>
           <div class="at-card selected" id="at-domain" onclick="toggleAnalysis('domain')">
-            <div class="at-icon">Ã°Å¸Å’Â</div>
+            <div class="at-icon">🌐</div>
             <div class="at-info">
-              <div class="at-name">Ã‚Â¿Encontrable en Web?</div>
+              <div class="at-name">¿Encontrable en Web?</div>
               <div class="at-desc">18 extensiones de dominio</div>
             </div>
             <div class="at-check" id="ac-domain"></div>
           </div>
           <div class="at-card selected" id="at-mua" onclick="toggleAnalysis('mua')">
-            <div class="at-icon">Ã°Å¸ÂÂ¢</div>
+            <div class="at-icon">🏢</div>
             <div class="at-info">
-              <div class="at-name">Ã‚Â¿Disponible como Empresa?</div>
-              <div class="at-desc">DenominaciÃƒÂ³n Social Ã‚Â· MUA</div>
+              <div class="at-name">¿Disponible como Empresa?</div>
+              <div class="at-desc">Denominación Social · MUA</div>
             </div>
             <div class="at-check" id="ac-mua"></div>
           </div>
         </div>
       </div>
 
-      <button class="btn-primary" onclick="wizNext(1)">CONTINUAR Ã¢â€ â€™</button>
+      <button class="btn-primary" onclick="wizNext(1)">CONTINUAR →</button>
     </div>
 
     <!-- Right: tagline -->
     <div class="hero-tagline">
-      <div class="tagline-eyebrow">Brainlab Ã‚Â· Trademark Insights MÃƒÂ©xico</div>
+      <div class="tagline-eyebrow">Brainlab · Trademark Insights México</div>
       <div class="tagline-h1">
-        Ã‚Â¿Tu nombre de<br>
+        ¿Tu nombre de<br>
         marca tiene<br>
         <em>futuro</em>?
       </div>
       <p class="tagline-body">
-        Antes de invertir en tu negocio, descubre si tu marca puede <strong style="color:var(--text)">registrarse legalmente</strong>, si estÃƒÂ¡ disponible en redes sociales, si puedes tener tu propio dominio web y si ya existe como empresa en MÃƒÂ©xico.
+        Antes de invertir en tu negocio, descubre si tu marca puede <strong style="color:var(--text)">registrarse legalmente</strong>, si está disponible en redes sociales, si puedes tener tu propio dominio web y si ya existe como empresa en México.
       </p>
       <ul class="tagline-checklist">
-        <li>VerificaciÃƒÂ³n de conflictos en el IMPI (Instituto Mexicano de la Propiedad Industrial)</li>
-        <li>Disponibilidad en Instagram, TikTok, X, LinkedIn y 21 plataformas mÃƒÂ¡s</li>
-        <li>Disponibilidad de dominios .com, .mx, .io y 15 extensiones mÃƒÂ¡s</li>
-        <li>Consulta de denominaciones sociales en el Registro PÃƒÂºblico MUA</li>
+        <li>Verificación de conflictos en el IMPI (Instituto Mexicano de la Propiedad Industrial)</li>
+        <li>Disponibilidad en Instagram, TikTok, X, LinkedIn y 21 plataformas más</li>
+        <li>Disponibilidad de dominios .com, .mx, .io y 15 extensiones más</li>
+        <li>Consulta de denominaciones sociales en el Registro Público MUA</li>
       </ul>
     </div>
   </div>
 </div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ STEP 2: Giro de Negocio Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ─── STEP 2: Giro de Negocio ───────────────────────────── -->
 <div class="wiz-step" id="ws-2">
-  <button class="btn-back" onclick="wizBack(2)">Ã¢â€ Â Regresar</button>
+  <button class="btn-back" onclick="wizBack(2)">← Regresar</button>
 
   <!-- Selected giro banner -->
   <div class="giro-selected-banner" id="giro-banner">
-    <div class="gsb-cls" id="gsb-cls-num">Ã¢â‚¬â€</div>
+    <div class="gsb-cls" id="gsb-cls-num">—</div>
     <div class="gsb-info">
-      <div class="gsb-cat" id="gsb-cat-name">Ã¢â‚¬â€</div>
-      <div class="gsb-note" id="gsb-cat-desc">Clase Niza asignada automÃƒÂ¡ticamente</div>
+      <div class="gsb-cat" id="gsb-cat-name">—</div>
+      <div class="gsb-note" id="gsb-cat-desc">Clase Niza asignada automáticamente</div>
     </div>
-    <button class="gsb-clear" onclick="clearGiro()" title="Cambiar giro">Ã¢Å“â€¢</button>
+    <button class="gsb-clear" onclick="clearGiro()" title="Cambiar giro">✕</button>
   </div>
 
   <div class="card">
-    <div class="card-title" style="margin-bottom:12px">Ã‚Â¿A quÃƒÂ© se dedica tu negocio o marca?</div>
+    <div class="card-title" style="margin-bottom:12px">¿A qué se dedica tu negocio o marca?</div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
-      Selecciona la categorÃƒÂ­a que mejor describe tu negocio. Asignaremos automÃƒÂ¡ticamente la <strong style="color:var(--text)">Clase Niza</strong> correspondiente para el anÃƒÂ¡lisis de marcas en conflicto ante el IMPI.
+      Selecciona la categoría que mejor describe tu negocio. Asignaremos automáticamente la <strong style="color:var(--text)">Clase Niza</strong> correspondiente para el análisis de marcas en conflicto ante el IMPI.
     </p>
 
     <!-- Filter pills -->
@@ -965,24 +965,24 @@ td.mono{font-family:var(--mono)}
 
     <!-- Search -->
     <div class="giro-search-wrap">
-      <span class="giro-search-icon">Ã°Å¸â€Â</span>
-      <input type="text" class="giro-search" id="giro-search" placeholder="Busca tu giro: restaurante, software, ropa, consultorÃƒÂ­a..." oninput="filterGiros()"/>
+      <span class="giro-search-icon">🔍</span>
+      <input type="text" class="giro-search" id="giro-search" placeholder="Busca tu giro: restaurante, software, ropa, consultoría..." oninput="filterGiros()"/>
     </div>
 
     <!-- Grid of giros -->
     <div class="giro-grid" id="giro-grid"></div>
   </div>
 
-  <button class="btn-primary" onclick="wizNext(2)" id="btn-continuar-2">CONTINUAR Ã¢â€ â€™</button>
+  <button class="btn-primary" onclick="wizNext(2)" id="btn-continuar-2">CONTINUAR →</button>
 </div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ STEP 3: Lanzar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ─── STEP 3: Lanzar ────────────────────────────── -->
 <div class="wiz-step" id="ws-3">
-  <button class="btn-back" onclick="wizBack(3)">Ã¢â€ Â Regresar</button>
-  <button class="btn-primary" id="run-btn" onclick="startAnalysis()" style="margin-top:16px">Ã¢â€“Â¶ INICIAR ANÃƒÂLISIS</button>
+  <button class="btn-back" onclick="wizBack(3)">← Regresar</button>
+  <button class="btn-primary" id="run-btn" onclick="startAnalysis()" style="margin-top:16px">▶ INICIAR ANÁLISIS</button>
 </div>
 
-<!-- Ã¢â€¢ÂÃ¢â€¢Â RESULTS Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<!-- ══ RESULTS ═════════════════════════════════════════════ -->
 <div id="results-area" style="margin-top:28px">
   <div id="brand-tabs-wrap" style="display:none">
     <div class="brand-tabs-bar" id="btabs-bar"></div>
@@ -990,14 +990,14 @@ td.mono{font-family:var(--mono)}
   <div id="btabs-contents"></div>
 </div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ Compare area Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── Compare area ── -->
 <div id="compare-area" style="display:none;margin-top:8px"></div>
 
-<!-- Ã¢â€â‚¬Ã¢â€â‚¬ MODALS Ã¢â€â‚¬Ã¢â€â‚¬ -->
+<!-- ── MODALS ── -->
 <!-- Ver Todos -->
 <div class="modal-back" id="vt-back" onclick="closeVtModal(event)">
   <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('vt-back').classList.remove('show')">Ã¢Å“â€¢</button>
+    <button class="modal-close" onclick="document.getElementById('vt-back').classList.remove('show')">✕</button>
     <div class="modal-title" id="vt-title">Todas las Clases Niza</div>
     <div class="modal-sub" id="vt-sub"></div>
     <div class="vt-grid" id="vt-grid"></div>
@@ -1006,16 +1006,16 @@ td.mono{font-family:var(--mono)}
 <!-- Criteria info -->
 <div class="modal-back" id="crit-back" onclick="closeCritModal(event)">
   <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('crit-back').classList.remove('show')">Ã¢Å“â€¢</button>
-    <div class="modal-title">Criterios de AnÃƒÂ¡lisis</div>
-    <div class="modal-sub">Sistema de evaluaciÃƒÂ³n de riesgo de no-concesiÃƒÂ³n</div>
+    <button class="modal-close" onclick="document.getElementById('crit-back').classList.remove('show')">✕</button>
+    <div class="modal-title">Criterios de Análisis</div>
+    <div class="modal-sub">Sistema de evaluación de riesgo de no-concesión</div>
     <div class="crit-grid">
-      <div class="crit-card"><div class="crit-num">C1</div><div class="crit-name">Distancia Levenshtein</div><div class="crit-val" id="mc1">Ã¢â€°Â¤ 30%</div><div class="crit-desc">Similitud ortogrÃƒÂ¡fica. Valores bajos = alta similitud visual.</div></div>
-      <div class="crit-card"><div class="crit-num">C2</div><div class="crit-name">Similitud Jaro-Winkler</div><div class="crit-val" id="mc2">Ã¢â€°Â¥ 87%</div><div class="crit-desc">Similitud fonÃƒÂ©tica. Alta similitud = riesgo de confusiÃƒÂ³n auditiva.</div></div>
-      <div class="crit-card"><div class="crit-num">C3</div><div class="crit-name">Prob. ConfusiÃƒÂ³n (ML)</div><div class="crit-val" id="mc3">Ã¢â€°Â¥ 50%</div><div class="crit-desc">Probabilidad de que el pÃƒÂºblico confunda las marcas.</div></div>
-      <div class="crit-card"><div class="crit-num">C4</div><div class="crit-name">Prob. ConcesiÃƒÂ³n (ML)</div><div class="crit-val" id="mc4">Ã¢â€°Â¤ 89%</div><div class="crit-desc">Probabilidad baja de concesiÃƒÂ³n = riesgo de rechazo.</div></div>
+      <div class="crit-card"><div class="crit-num">C1</div><div class="crit-name">Distancia Levenshtein</div><div class="crit-val" id="mc1">≤ 30%</div><div class="crit-desc">Similitud ortográfica. Valores bajos = alta similitud visual.</div></div>
+      <div class="crit-card"><div class="crit-num">C2</div><div class="crit-name">Similitud Jaro-Winkler</div><div class="crit-val" id="mc2">≥ 87%</div><div class="crit-desc">Similitud fonética. Alta similitud = riesgo de confusión auditiva.</div></div>
+      <div class="crit-card"><div class="crit-num">C3</div><div class="crit-name">Prob. Confusión (ML)</div><div class="crit-val" id="mc3">≥ 50%</div><div class="crit-desc">Probabilidad de que el público confunda las marcas.</div></div>
+      <div class="crit-card"><div class="crit-num">C4</div><div class="crit-name">Prob. Concesión (ML)</div><div class="crit-val" id="mc4">≤ 89%</div><div class="crit-desc">Probabilidad baja de concesión = riesgo de rechazo.</div></div>
     </div>
-    <div class="concesion-rule">Se otorga <strong style="color:var(--green)">CONCESIÃƒâ€œN</strong> cuando <span class="rule-hl" id="mc-rule">Ã¢â€°Â¤ 1 criterio activo</span>. Con <span id="mc-min">2</span> o mÃƒÂ¡s criterios Ã¢â€ â€™ <strong style="color:var(--red)">NO CONCESIÃƒâ€œN</strong>.</div>
+    <div class="concesion-rule">Se otorga <strong style="color:var(--green)">CONCESIÓN</strong> cuando <span class="rule-hl" id="mc-rule">≤ 1 criterio activo</span>. Con <span id="mc-min">2</span> o más criterios → <strong style="color:var(--red)">NO CONCESIÓN</strong>.</div>
   </div>
 </div>
 
@@ -1025,9 +1025,9 @@ td.mono{font-family:var(--mono)}
 
 <script>
 'use strict';
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // STATE
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 let currentStep = 1;
 let selectedMode = 'T';
 let selectedClases = [];
@@ -1043,7 +1043,7 @@ let activeBrandIdx = 0;
 let favorites = JSON.parse(localStorage.getItem('tim_fav') || '[]');
 let selectedAnalysis = {marca:true, social:true, domain:true, mua:true};
 let selectedGiro = null; // {cls, category, description, type}
-let sigaResults = {}; // brandIdx Ã¢â€ â€™ siga result data
+let sigaResults = {}; // brandIdx → siga result data
 const CRITERIA_DEFAULT = {dist:30, sim:87, conf:50, conc:89, minCount:2};
 let criteriaConfig = {...CRITERIA_DEFAULT};
 let criteriaMode = 'default';
@@ -1054,9 +1054,9 @@ let _activeTickerByBrand = {};
 let _classDataByBrand = {};
 let _toastTimer = null;
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // WIZARD
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function wizGo(step){
   const prev = document.getElementById('ws-'+currentStep);
   const next = document.getElementById('ws-'+step);
@@ -1075,7 +1075,7 @@ function wizNext(from){
   if(from===1){
     syncBrandList();
     if(!brandList.filter(b=>b.trim()).length){ showToast('Ingresa al menos una marca'); return; }
-    if(!Object.values(selectedAnalysis).some(v=>v)){ showToast('Selecciona al menos un tipo de anÃƒÂ¡lisis'); return; }
+    if(!Object.values(selectedAnalysis).some(v=>v)){ showToast('Selecciona al menos un tipo de análisis'); return; }
     if(selectedAnalysis.marca) wizGo(2); else wizGo(3);
   } else if(from===2){
     if(selectedAnalysis.marca && !selectedGiro){ showToast('Selecciona el giro de tu negocio'); return; }
@@ -1091,7 +1091,7 @@ function updateWizBar(active){
   [1,2,3].forEach(n=>{
     const c=document.getElementById('wc-'+n), l=document.getElementById('wl-'+n);
     c.className='wiz-circle';l.className='wiz-label';
-    if(n<active){c.classList.add('done');c.textContent='Ã¢Å“â€œ';l.classList.add('done');}
+    if(n<active){c.classList.add('done');c.textContent='✓';l.classList.add('done');}
     else if(n===active){c.classList.add('active');c.textContent=String(n);l.classList.add('active');}
     else{c.textContent=String(n);}
   });
@@ -1103,55 +1103,55 @@ function updateWizBar(active){
   else fill.style.width=tw+'px';
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // GIRO DE NEGOCIO
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 const NIZA_DATA = [
-  {n:1,type:"producto",h:"QuÃƒÂ­mica e industria",i:["Fertilizantes y abonos","Productos quÃƒÂ­micos industriales","Adhesivos industriales","Resinas artificiales","Solventes y diluyentes","Colorantes industriales","Compost orgÃƒÂ¡nico","Herbicidas","Insecticidas","Fungicidas","AgroquÃƒÂ­micos","Productos para curtido de cuero","Preparaciones biolÃƒÂ³gicas","Aceites esenciales para industria","Enzimas industriales","Productos para tratamiento de agua","Compuestos para soldadura","Materias plÃƒÂ¡sticas en bruto","Productos quÃƒÂ­micos para fotografÃƒÂ­a","Productos para extinciÃƒÂ³n de incendios","ÃƒÂcidos industriales","Catalizadores","Inhibidores de corrosiÃƒÂ³n"]},
-  {n:2,type:"producto",h:"Pinturas y revestimientos",i:["Pinturas decorativas","Barnices","Lacas","Esmaltes","Pintura automotriz","Pintura para paredes","Pintura en spray","Antioxidantes y anticorrosivos","Colorantes","Tintes para cabello","Tintas de impresiÃƒÂ³n","Pigmentos","Recubrimientos metÃƒÂ¡licos","Imprimantes y selladores","Pintura epÃƒÂ³xica","Pintura para madera","Barniz para pisos"]},
-  {n:3,type:"producto",h:"CosmÃƒÂ©ticos y limpieza",i:["Shampoo","Perfumes y fragancias","Cremas hidratantes","Maquillaje","CosmÃƒÂ©ticos","JabÃƒÂ³n","Detergente","Desodorante","Protector solar","Bloqueador solar","Pasta dental","Acondicionador","Crema facial","Crema corporal","Gel de ducha","Esmalte de uÃƒÂ±as","Lociones","Colonias","Productos para blanquear ropa","Limpiadores domÃƒÂ©sticos","Cera para pisos","Quitamanchas","Desengrasante domÃƒÂ©stico","Gel para cabello","TÃƒÂ³nico capilar","Crema antienvejecimiento","SÃƒÂ©rum facial","Mascarilla facial","BÃƒÂ¡lsamo labial","Crema para manos","Limpieza facial","Desmaquillante","TÃƒÂ³nico facial","Aromatizante de ambiente"]},
-  {n:4,type:"producto",h:"Aceites, combustibles y lubricantes",i:["Aceite lubricante","Aceite de motor","Lubricantes industriales","Gasolina","Combustibles","Ceras industriales","Grasa mecÃƒÂ¡nica","Velas de iluminaciÃƒÂ³n","Aceite para maquinaria","PetrÃƒÂ³leo","Productos petroquÃƒÂ­micos","Aceite hidrÃƒÂ¡ulico","Anticongelantes","BujÃƒÂ­as de iluminaciÃƒÂ³n"]},
-  {n:5,type:"producto",h:"FarmacÃƒÂ©uticos y sanitarios",i:["Medicamentos","Productos farmacÃƒÂ©uticos","Vitaminas","Suplementos alimenticios","AntibiÃƒÂ³ticos","AnalgÃƒÂ©sicos","Antiinflamatorios","Vacunas","Productos veterinarios","Desinfectantes","Mascarillas sanitarias","Vendas y apÃƒÂ³sitos","ProbiÃƒÂ³ticos","ProteÃƒÂ­nas y suplementos deportivos","Productos homeopÃƒÂ¡ticos","Preparaciones herbales","Material para curaciÃƒÂ³n","Anticonceptivos","Cremas medicinales","AntihistamÃƒÂ­nicos","Cannabis medicinal","ColÃƒÂ¡geno","Alimentos para bebÃƒÂ©s","Dietas mÃƒÂ©dicas","Productos sanitarios femeninos"]},
-  {n:6,type:"producto",h:"Metales comunes",i:["Estructuras metÃƒÂ¡licas","HerrerÃƒÂ­a","Cables metÃƒÂ¡licos","Cerraduras","Candados","Bisagras","Tornillos y clavos","Materiales de construcciÃƒÂ³n metÃƒÂ¡licos","Contenedores metÃƒÂ¡licos","FerreterÃƒÂ­a","Marcos de metal","Rejas metÃƒÂ¡licas","Puertas metÃƒÂ¡licas","Cajas fuertes","TuberÃƒÂ­as metÃƒÂ¡licas","Grapas y sujetadores","Placas y lÃƒÂ¡minas de metal","Perfiles metÃƒÂ¡licos","Alcantarillas metÃƒÂ¡licas"]},
-  {n:7,type:"producto",h:"Maquinaria e industria",i:["MÃƒÂ¡quinas industriales","Motores industriales","Herramientas mecÃƒÂ¡nicas","Maquinaria agrÃƒÂ­cola","Bombas industriales","Compresores","Generadores elÃƒÂ©ctricos","Robots industriales","Prensas industriales","MÃƒÂ¡quinas de coser industriales","Impresoras 3D","AutomatizaciÃƒÂ³n industrial","Equipos CNC","Maquinaria de construcciÃƒÂ³n","Excavadoras","GrÃƒÂºas","Tractores","Tornos y fresadoras","MÃƒÂ¡quinas empacadoras","Equipos de refrigeraciÃƒÂ³n industrial","Ventiladores industriales","Maquinaria de alimentos"]},
-  {n:8,type:"producto",h:"Herramientas manuales",i:["Herramientas de mano","Cuchillos","Tenedores y cucharas","Tijeras","Destornilladores","Martillos","Llaves de tuercas","Pinzas","Navajas","CuchillerÃƒÂ­a de cocina","Herramientas para jardÃƒÂ­n","Sacacorchos","Podadoras manuales","Abrelatas","Cortadores","EspÃƒÂ¡tulas de mano","Maquinillas de afeitar"]},
-  {n:9,type:"producto",h:"ElectrÃƒÂ³nica y software",i:["Software","Aplicaciones mÃƒÂ³viles","Apps","Hardware","Computadoras","Laptops","Smartphones","Tablets","CÃƒÂ¡maras fotogrÃƒÂ¡ficas","CÃƒÂ¡maras de seguridad","VideocÃƒÂ¡maras","Televisores","Bocinas y altavoces","Auriculares y headphones","Sensores electrÃƒÂ³nicos","GPS","Drones","Realidad virtual y aumentada","Inteligencia artificial","Videojuegos","Consolas de videojuegos","BaterÃƒÂ­as y cargadores","Memorias USB","Discos duros","Servidores","Antivirus","Plataformas digitales","E-commerce","SaaS","Cloud computing","Relojes inteligentes","Smartwatches","Robots domÃƒÂ©sticos","CÃƒÂ¡maras de acciÃƒÂ³n","Paneles solares","Impresoras","EscÃƒÂ¡neres","Equipos de seguridad electrÃƒÂ³nica","Rastreadores GPS","Bases de datos","Machine learning"]},
-  {n:10,type:"producto",h:"Instrumentos mÃƒÂ©dicos",i:["Equipos mÃƒÂ©dicos","Aparatos mÃƒÂ©dicos","Dispositivos mÃƒÂ©dicos","Sillas de ruedas","PrÃƒÂ³tesis y ÃƒÂ³rtesis","Lentes de contacto","Gafas y anteojos mÃƒÂ©dicos","Aparatos dentales","Equipos de diagnÃƒÂ³stico","Instrumental quirÃƒÂºrgico","Jeringas y agujas","Equipos ortopÃƒÂ©dicos","ArtÃƒÂ­culos para bebÃƒÂ©","Monitores de presiÃƒÂ³n arterial","GlucÃƒÂ³metros","TermÃƒÂ³metros mÃƒÂ©dicos","Equipos de fisioterapia","Camas hospitalarias","Andaderas y muletas","AudÃƒÂ­fonos para sordera","Equipos de ultrasonido"]},
-  {n:11,type:"producto",h:"IluminaciÃƒÂ³n y sanitarios",i:["LÃƒÂ¡mparas","Luminarias LED","Focos LED","Ventiladores de techo","Aires acondicionados","Calentadores","Estufas","Hornos","Lavaplatos","Refrigeradores","Sanitarios y retretes","Lavabos","Regaderas","Purificadores de agua","Extractores de cocina","Tinacos y boilers","Calefactores","VentilaciÃƒÂ³n industrial","Filtros de agua","Jacuzzi","Secadores de ropa","ClimatizaciÃƒÂ³n"]},
-  {n:12,type:"producto",h:"VehÃƒÂ­culos y transporte",i:["AutomÃƒÂ³viles","Coches","Motocicletas","Bicicletas","Camiones","Autobuses","Barcos","Aviones","Scooters elÃƒÂ©ctricos","Patinetas elÃƒÂ©ctricas","VehÃƒÂ­culos elÃƒÂ©ctricos","Partes de automÃƒÂ³vil","Llantas y neumÃƒÂ¡ticos","Remolques","Cuatrimotos","CarrocerÃƒÂ­as","Drones aÃƒÂ©reos","Embarcaciones"]},
+  {n:1,type:"producto",h:"Química e industria",i:["Fertilizantes y abonos","Productos químicos industriales","Adhesivos industriales","Resinas artificiales","Solventes y diluyentes","Colorantes industriales","Compost orgánico","Herbicidas","Insecticidas","Fungicidas","Agroquímicos","Productos para curtido de cuero","Preparaciones biológicas","Aceites esenciales para industria","Enzimas industriales","Productos para tratamiento de agua","Compuestos para soldadura","Materias plásticas en bruto","Productos químicos para fotografía","Productos para extinción de incendios","Ácidos industriales","Catalizadores","Inhibidores de corrosión"]},
+  {n:2,type:"producto",h:"Pinturas y revestimientos",i:["Pinturas decorativas","Barnices","Lacas","Esmaltes","Pintura automotriz","Pintura para paredes","Pintura en spray","Antioxidantes y anticorrosivos","Colorantes","Tintes para cabello","Tintas de impresión","Pigmentos","Recubrimientos metálicos","Imprimantes y selladores","Pintura epóxica","Pintura para madera","Barniz para pisos"]},
+  {n:3,type:"producto",h:"Cosméticos y limpieza",i:["Shampoo","Perfumes y fragancias","Cremas hidratantes","Maquillaje","Cosméticos","Jabón","Detergente","Desodorante","Protector solar","Bloqueador solar","Pasta dental","Acondicionador","Crema facial","Crema corporal","Gel de ducha","Esmalte de uñas","Lociones","Colonias","Productos para blanquear ropa","Limpiadores domésticos","Cera para pisos","Quitamanchas","Desengrasante doméstico","Gel para cabello","Tónico capilar","Crema antienvejecimiento","Sérum facial","Mascarilla facial","Bálsamo labial","Crema para manos","Limpieza facial","Desmaquillante","Tónico facial","Aromatizante de ambiente"]},
+  {n:4,type:"producto",h:"Aceites, combustibles y lubricantes",i:["Aceite lubricante","Aceite de motor","Lubricantes industriales","Gasolina","Combustibles","Ceras industriales","Grasa mecánica","Velas de iluminación","Aceite para maquinaria","Petróleo","Productos petroquímicos","Aceite hidráulico","Anticongelantes","Bujías de iluminación"]},
+  {n:5,type:"producto",h:"Farmacéuticos y sanitarios",i:["Medicamentos","Productos farmacéuticos","Vitaminas","Suplementos alimenticios","Antibióticos","Analgésicos","Antiinflamatorios","Vacunas","Productos veterinarios","Desinfectantes","Mascarillas sanitarias","Vendas y apósitos","Probióticos","Proteínas y suplementos deportivos","Productos homeopáticos","Preparaciones herbales","Material para curación","Anticonceptivos","Cremas medicinales","Antihistamínicos","Cannabis medicinal","Colágeno","Alimentos para bebés","Dietas médicas","Productos sanitarios femeninos"]},
+  {n:6,type:"producto",h:"Metales comunes",i:["Estructuras metálicas","Herrería","Cables metálicos","Cerraduras","Candados","Bisagras","Tornillos y clavos","Materiales de construcción metálicos","Contenedores metálicos","Ferretería","Marcos de metal","Rejas metálicas","Puertas metálicas","Cajas fuertes","Tuberías metálicas","Grapas y sujetadores","Placas y láminas de metal","Perfiles metálicos","Alcantarillas metálicas"]},
+  {n:7,type:"producto",h:"Maquinaria e industria",i:["Máquinas industriales","Motores industriales","Herramientas mecánicas","Maquinaria agrícola","Bombas industriales","Compresores","Generadores eléctricos","Robots industriales","Prensas industriales","Máquinas de coser industriales","Impresoras 3D","Automatización industrial","Equipos CNC","Maquinaria de construcción","Excavadoras","Grúas","Tractores","Tornos y fresadoras","Máquinas empacadoras","Equipos de refrigeración industrial","Ventiladores industriales","Maquinaria de alimentos"]},
+  {n:8,type:"producto",h:"Herramientas manuales",i:["Herramientas de mano","Cuchillos","Tenedores y cucharas","Tijeras","Destornilladores","Martillos","Llaves de tuercas","Pinzas","Navajas","Cuchillería de cocina","Herramientas para jardín","Sacacorchos","Podadoras manuales","Abrelatas","Cortadores","Espátulas de mano","Maquinillas de afeitar"]},
+  {n:9,type:"producto",h:"Electrónica y software",i:["Software","Aplicaciones móviles","Apps","Hardware","Computadoras","Laptops","Smartphones","Tablets","Cámaras fotográficas","Cámaras de seguridad","Videocámaras","Televisores","Bocinas y altavoces","Auriculares y headphones","Sensores electrónicos","GPS","Drones","Realidad virtual y aumentada","Inteligencia artificial","Videojuegos","Consolas de videojuegos","Baterías y cargadores","Memorias USB","Discos duros","Servidores","Antivirus","Plataformas digitales","E-commerce","SaaS","Cloud computing","Relojes inteligentes","Smartwatches","Robots domésticos","Cámaras de acción","Paneles solares","Impresoras","Escáneres","Equipos de seguridad electrónica","Rastreadores GPS","Bases de datos","Machine learning"]},
+  {n:10,type:"producto",h:"Instrumentos médicos",i:["Equipos médicos","Aparatos médicos","Dispositivos médicos","Sillas de ruedas","Prótesis y órtesis","Lentes de contacto","Gafas y anteojos médicos","Aparatos dentales","Equipos de diagnóstico","Instrumental quirúrgico","Jeringas y agujas","Equipos ortopédicos","Artículos para bebé","Monitores de presión arterial","Glucómetros","Termómetros médicos","Equipos de fisioterapia","Camas hospitalarias","Andaderas y muletas","Audífonos para sordera","Equipos de ultrasonido"]},
+  {n:11,type:"producto",h:"Iluminación y sanitarios",i:["Lámparas","Luminarias LED","Focos LED","Ventiladores de techo","Aires acondicionados","Calentadores","Estufas","Hornos","Lavaplatos","Refrigeradores","Sanitarios y retretes","Lavabos","Regaderas","Purificadores de agua","Extractores de cocina","Tinacos y boilers","Calefactores","Ventilación industrial","Filtros de agua","Jacuzzi","Secadores de ropa","Climatización"]},
+  {n:12,type:"producto",h:"Vehículos y transporte",i:["Automóviles","Coches","Motocicletas","Bicicletas","Camiones","Autobuses","Barcos","Aviones","Scooters eléctricos","Patinetas eléctricas","Vehículos eléctricos","Partes de automóvil","Llantas y neumáticos","Remolques","Cuatrimotos","Carrocerías","Drones aéreos","Embarcaciones"]},
   {n:13,type:"producto",h:"Armas y explosivos",i:["Armas de fuego","Pistolas","Rifles","Municiones","Cartuchos","Explosivos","Pirotecnia","Fuegos artificiales","Bengalas","Armas de defensa personal"]},
-  {n:14,type:"producto",h:"JoyerÃƒÂ­a y relojerÃƒÂ­a",i:["JoyerÃƒÂ­a","Joyas","Relojes","Anillos","Collares","Pulseras","Aretes y pendientes","Broches","Medallas","Trofeos","BisuterrÃƒÂ­a fina","JoyerÃƒÂ­a de oro y plata","Diamantes","Piedras preciosas","Plata esterlina","JoyerÃƒÂ­a artesanal","Relojes de lujo","Relojes inteligentes (joyerÃƒÂ­a)"]},
-  {n:15,type:"producto",h:"Instrumentos musicales",i:["Guitarras","Piano y teclados","ViolÃƒÂ­n","BaterÃƒÂ­a","Instrumentos musicales","MicrÃƒÂ³fonos","Amplificadores","Cuerdas musicales","Trompetas","Saxofones","Flautas","Percusiones","Bajos elÃƒÂ©ctricos","Ukuleles","Acordeones","Boquillas","Atriles"]},
-  {n:16,type:"producto",h:"PapelerÃƒÂ­a e imprenta",i:["PapelerÃƒÂ­a","Libros","Revistas","Cuadernos","BolÃƒÂ­grafos y plumas","LÃƒÂ¡pices","Carpetas y archiveros","Material didÃƒÂ¡ctico","Tarjetas de presentaciÃƒÂ³n","Material de oficina","Sellos y stickers","Etiquetas","Mapas","Calendarios","Material de impresiÃƒÂ³n","Publicaciones","PeriÃƒÂ³dicos","Material escolar","Agendas","Manualidades","Pintura para niÃƒÂ±os","Libros de texto","Arte y dibujo","Papel fotogrÃƒÂ¡fico"]},
-  {n:17,type:"producto",h:"Caucho y materiales aislantes",i:["Caucho","Goma","PlÃƒÂ¡sticos industriales semielaborados","TuberÃƒÂ­as flexibles","Mangueras","Materiales de aislamiento","Hule","Silicona industrial","Sellos y empaques industriales","Materiales para calafatear","Fibra de vidrio","Espuma de poliuretano"]},
-  {n:18,type:"producto",h:"Cuero y equipaje",i:["Bolsas de mano","Mochilas","Maletas y equipaje","Carteras","Billeteras","Monederos","Cinturones","Cuero y piel","Paraguas","Sombrillas","Portafolios","Bolsos de diseÃƒÂ±ador","Bolsos de playa","RiÃƒÂ±oneras","Correas para mascotas","Collares para mascotas","PortabebÃƒÂ©s","Bolsas de cuero artesanal"]},
-  {n:19,type:"producto",h:"Materiales de construcciÃƒÂ³n",i:["Materiales de construcciÃƒÂ³n","Cemento","Ladrillos y tabiques","Azulejos","Tejas","Yeso","Concreto","Madera para construcciÃƒÂ³n","Pisos","Puertas","Ventanas","MÃƒÂ¡rmol","Granito","Asfalto","Impermeabilizante","Block y tabicÃƒÂ³n","Arena y grava","Paneles de construcciÃƒÂ³n","Drywall","Muros prefabricados","Losas","Recubrimientos no metÃƒÂ¡licos"]},
-  {n:20,type:"producto",h:"Muebles y contenedores",i:["Muebles","Sillas","Mesas","Camas","SofÃƒÂ¡s y sillones","Escritorios","Libreros","Closets","Gabinetes","Espejos","Marcos y cuadros","Cajas de almacenamiento","Canastas","Hamacas","Sillas de oficina","Cocinas integrales","Colchones","Muebles de jardÃƒÂ­n","EstanterÃƒÂ­as","Puff y otomanas","Muebles para baÃƒÂ±o"]},
-  {n:21,type:"producto",h:"Utensilios domÃƒÂ©sticos",i:["Utensilios de cocina","Ollas y cazuelas","Sartenes","Platos","Vasos y copas","Tazas","Moldes para horno","Recipientes y contenedores","BaterÃƒÂ­as de cocina","Cepillos de dientes","Esponjas","Porcelana y cerÃƒÂ¡mica","CristalerÃƒÂ­a","Jarras y termos","Cucharones y espÃƒÂ¡tulas","Peladores y ralladores","Coladores","Tablas para picar","Freidoras de aire"]},
-  {n:22,type:"producto",h:"Cuerdas, redes y materiales",i:["Cuerdas y sogas","Redes","Tiendas de campaÃƒÂ±a","Carpas","Lonas y toldos","Sacos industriales","Redes de pesca","Redes deportivas","Cuerdas de escalada","Materiales de embalaje textil"]},
-  {n:23,type:"producto",h:"Hilos e hilados",i:["Hilos para coser","Hilados textiles","Lana","Hilo de bordar","Hilo para crochet","Hilo para tejer","Fibras textiles en bruto","Hilo industrial","Hilo de algodÃƒÂ³n","Hilo de poliÃƒÂ©ster"]},
-  {n:24,type:"producto",h:"Tejidos y ropa de hogar",i:["SÃƒÂ¡banas","Cobijas y cobertores","Manteles","Cortinas","Toallas","Telas y tejidos","Ropa de cama","Fundas","Colchas","Tapetes de tela","Almohadas","MantelerÃƒÂ­a","Tapices","Telas para tapizar"]},
-  {n:25,type:"producto",h:"Ropa y calzado",i:["Ropa","Playeras y camisetas","Camisas","Pantalones","Faldas","Vestidos","Zapatos","Tenis y sneakers","Botas","Sandalias","Calcetines","Ropa interior","Uniformes","Calzado deportivo","Sombreros y gorras","Ropa deportiva","Trajes y sacos","Jeans","Chaquetas y abrigos","Ropa para bebÃƒÂ©","Pijamas","Trajes de baÃƒÂ±o","Leggings","Sudaderas","Chamarras","Ropa de trabajo","Pantuflas","Trajes de novia","Disfraces"]},
-  {n:26,type:"producto",h:"MercerÃƒÂ­a y accesorios textiles",i:["Botones","Cierres y cremalleras","Agujas y alfileres","Bordados","Listones y cintas","Encajes","Flores artificiales","Accesorios para el cabello","Diademas","Broches para ropa","Velcro","ElÃƒÂ¡sticos","Parches bordados","Adornos para ropa"]},
-  {n:27,type:"producto",h:"Alfombras y revestimientos de suelo",i:["Alfombras","Tapetes","Pisos laminados","Revestimientos de suelo","Pisos de vinilo","Tapetes decorativos","Pisos de madera","Tapetes de baÃƒÂ±o","Tapetes de cocina","Pisos de hule","Tapetes antiderrapantes"]},
-  {n:28,type:"producto",h:"Juegos, juguetes y deporte",i:["Juguetes","Juegos de mesa","Videojuegos","ArtÃƒÂ­culos deportivos","Balones y pelotas","Bicicletas de ejercicio","Pesas y mancuernas","Equipos de gimnasio","Raquetas","Patines","Patinetas","Equipo de nataciÃƒÂ³n","Material de bÃƒÂ©isbol","Material de fÃƒÂºtbol","Material de bÃƒÂ¡squetbol","Adornos navideÃƒÂ±os","MuÃƒÂ±ecas","Figuras de acciÃƒÂ³n","Rompecabezas","Equipo de camping","Dardos","Mesa de ping pong","Cuerdas para saltar","Inflables","Equipos de yoga"]},
-  {n:29,type:"producto",h:"Alimentos cÃƒÂ¡rnicos y lÃƒÂ¡cteos",i:["Carne de res","Carne de pollo","Carne de cerdo","Pescado y mariscos","Leche","Queso","Yogur","Mantequilla","Crema","Embutidos","JamÃƒÂ³n","Salchicha","Frutas en conserva","Verduras en conserva","Aceite de oliva","Aceite vegetal","Manteca","Huevos","AtÃƒÂºn enlatado","Sardinas","Caldos enlatados","Leche evaporada","Crema ÃƒÂ¡cida","Queso panela","Queso Oaxaca","ProteÃƒÂ­na animal"]},
-  {n:30,type:"producto",h:"Cereales, panaderÃƒÂ­a y condimentos",i:["CafÃƒÂ©","CafÃƒÂ© de especialidad","CafÃƒÂ© molido","CafÃƒÂ© en cÃƒÂ¡psulas","CafÃƒÂ© orgÃƒÂ¡nico","TÃƒÂ©","Cacao","Chocolate","Pan","Pasteles y pastelerÃƒÂ­a","Galletas","Tortillas","Arroz","Pasta y fideos","Harina","AzÃƒÂºcar","Sal","Especias y condimentos","Salsas","Mermeladas","Miel","Helado","Paletas","Dulces y confiterÃƒÂ­a","Cereales para desayuno","Chocolates artesanales","Postres","PanaderÃƒÂ­a artesanal","Snacks","Botanas","Granola"]},
-  {n:31,type:"producto",h:"Productos agrÃƒÂ­colas y animales",i:["Frutas frescas","Verduras frescas","Hortalizas","Plantas de ornato","Flores naturales","Semillas para siembra","Animales vivos","Alimentos para mascotas","Comida para perros","Comida para gatos","Granos sin procesar","MaÃƒÂ­z","Frijol","CafÃƒÂ© en grano","Aguacate","Hierbas aromÃƒÂ¡ticas frescas","Cactus","Plantas medicinales","Hongos comestibles"]},
-  {n:32,type:"producto",h:"Cervezas y bebidas sin alcohol",i:["Agua embotellada","Agua purificada","Agua mineralizada","Refrescos","Bebidas energÃƒÂ©ticas","Jugos y nÃƒÂ©ctares","Bebidas deportivas","Aguas frescas","TÃƒÂ© frÃƒÂ­o","Limonada","Cerveza sin alcohol","Kombucha","Bebidas naturales","Bebidas funcionales","Tepache","Agua de coco","Bebidas de proteÃƒÂ­nas","Bebidas fermentadas sin alcohol","Cervezas artesanales"]},
-  {n:33,type:"producto",h:"Bebidas alcohÃƒÂ³licas",i:["Vino","Tequila","Mezcal","Whisky","Ron","Vodka","Brandy","Licores","Aguardiente","Pulque","Sotol","Raicilla","Destilados artesanales","Cerveza (alcohÃƒÂ³lica)","Sidra","Gin","Sake","Bebidas alcohÃƒÂ³licas de sabores","Amaretto","Champagne"]},
-  {n:34,type:"producto",h:"Tabaco y artÃƒÂ­culos para fumadores",i:["Cigarros","Tabaco","Puros","Cigarrillos electrÃƒÂ³nicos","Vapeadores","Vaporizadores","Nicotina","Encendedores","Pipa para tabaco","Tabaco de pipa","Hookah","Shisha","Tabaco sin humo"]},
-  {n:35,type:"servicio",h:"Publicidad y administraciÃƒÂ³n de negocios",i:["Publicidad","Marketing","Marketing digital","GestiÃƒÂ³n de redes sociales","Agencia de publicidad","ConsultorÃƒÂ­a de negocios","AdministraciÃƒÂ³n empresarial","Recursos humanos","Contabilidad","Servicios de oficina","Branding","Relaciones pÃƒÂºblicas","SEO y SEM","Social media management","Influencer marketing","GestiÃƒÂ³n de marca","Franquicias","Outsourcing","Call center","Telemarketing","Agencia de mercadotecnia","RepresentaciÃƒÂ³n comercial","GestiÃƒÂ³n de e-commerce","AnÃƒÂ¡lisis de mercado","ConsultorÃƒÂ­a de ventas","SelecciÃƒÂ³n de personal","Headhunting","ProducciÃƒÂ³n de contenido","CRM y gestiÃƒÂ³n de clientes","GestiÃƒÂ³n de eventos empresariales","NÃƒÂ³mina y IMSS"]},
-  {n:36,type:"servicio",h:"Finanzas, seguros e inmobiliaria",i:["Servicios financieros","Banca","CrÃƒÂ©ditos y prÃƒÂ©stamos","Seguros de vida","Seguros de automÃƒÂ³vil","Seguros mÃƒÂ©dicos","Seguros empresariales","Fintech","Inversiones","Bolsa de valores","Bienes raÃƒÂ­ces","Inmobiliaria","Compraventa de propiedades","AdministraciÃƒÂ³n de propiedades","Arrendamiento","Hipotecas","Cambio de divisas","Criptomonedas","Pagos electrÃƒÂ³nicos","Procesamiento de pagos","ValuaciÃƒÂ³n de inmuebles","AdministraciÃƒÂ³n de patrimonio","Fondos de inversiÃƒÂ³n","Microfinanzas","Crowdfunding"]},
-  {n:37,type:"servicio",h:"ConstrucciÃƒÂ³n y reparaciÃƒÂ³n",i:["ConstrucciÃƒÂ³n","ReparaciÃƒÂ³n","Mantenimiento","PlomerÃƒÂ­a","Electricista","AlbaÃƒÂ±ilerÃƒÂ­a","Pintura de edificios","RemodelaciÃƒÂ³n","RenovaciÃƒÂ³n","InstalaciÃƒÂ³n de aire acondicionado","InstalaciÃƒÂ³n elÃƒÂ©ctrica","Limpieza industrial","Lavado de autos","Taller mecÃƒÂ¡nico","ReparaciÃƒÂ³n de electrÃƒÂ³nicos","MinerÃƒÂ­a","PerforaciÃƒÂ³n","CarpinterÃƒÂ­a","HerrerÃƒÂ­a","ImpermeabilizaciÃƒÂ³n","InstalaciÃƒÂ³n de paneles solares","JardinerÃƒÂ­a","FumigaciÃƒÂ³n","Control de plagas","Mantenimiento de albercas","RefrigeraciÃƒÂ³n y aire"]},
-  {n:38,type:"servicio",h:"Telecomunicaciones",i:["Telecomunicaciones","Internet","TelefonÃƒÂ­a","Comunicaciones digitales","Streaming","TransmisiÃƒÂ³n en vivo","MensajerÃƒÂ­a instantÃƒÂ¡nea","Correo electrÃƒÂ³nico (servicio)","Redes de comunicaciÃƒÂ³n","TelevisiÃƒÂ³n por cable","TelevisiÃƒÂ³n satelital","Radio","Podcasts","Comunicaciones satelitales","VoIP","Servicio de datos mÃƒÂ³viles","Redes 5G","Hosting de contenido","Videoconferencias","RadiodifusiÃƒÂ³n"]},
-  {n:39,type:"servicio",h:"Transporte y logÃƒÂ­stica",i:["Transporte","LogÃƒÂ­stica","MensajerÃƒÂ­a","PaqueterÃƒÂ­a","Delivery","EnvÃƒÂ­os","Mudanzas","Almacenamiento","Agencia de viajes","Tours y turismo","Carga y flete","Courrier","Servicio de taxi","Transporte en app","Renta de vehÃƒÂ­culos","Transporte de pasajeros","DistribuciÃƒÂ³n","Transporte aÃƒÂ©reo","Carga internacional","Aduanas (agente)","ÃƒÅ¡ltima milla","Cadena de suministro","AlmacÃƒÂ©n frigorÃƒÂ­fico"]},
-  {n:40,type:"servicio",h:"Tratamiento de materiales",i:["ImpresiÃƒÂ³n","Imprenta","SerigrafÃƒÂ­a","Bordado","Reciclaje","Tratamiento de agua","PurificaciÃƒÂ³n","ConservaciÃƒÂ³n de alimentos","Procesamiento de materiales","Manufactura por encargo","Corte y ensamblaje","Galvanizado","Tratamiento de madera","SublimaciÃƒÂ³n","Grabado","Pintura industrial","Moldeado","Procesamiento de alimentos","ClasificaciÃƒÂ³n y envasado"]},
-  {n:41,type:"servicio",h:"EducaciÃƒÂ³n, entretenimiento y deporte",i:["EducaciÃƒÂ³n","Escuela y colegio","Universidad","Cursos y talleres","CapacitaciÃƒÂ³n y entrenamiento","Coaching","TutorÃƒÂ­as","Clases en lÃƒÂ­nea","E-learning","Plataformas educativas","Entretenimiento","Teatro","Conciertos y eventos","ProducciÃƒÂ³n de contenido","FotografÃƒÂ­a","VideografÃƒÂ­a","Cine y producciÃƒÂ³n audiovisual","Publicaciones y ediciÃƒÂ³n","Deportes","Clubes deportivos","Actividades culturales","ProducciÃƒÂ³n musical","Estudio de grabaciÃƒÂ³n","Streaming de entretenimiento","Gaming en lÃƒÂ­nea","Parques de diversiÃƒÂ³n","Biblioteca y museos","Clases de idiomas","Yoga y meditaciÃƒÂ³n","Fitness y gimnasio"]},
-  {n:42,type:"servicio",h:"Servicios cientÃƒÂ­ficos y tecnolÃƒÂ³gicos",i:["Desarrollo de software","ProgramaciÃƒÂ³n","Desarrollo web","Desarrollo de apps","DiseÃƒÂ±o web","UX/UI design","ConsultorÃƒÂ­a tecnolÃƒÂ³gica","Cloud computing","Ciberseguridad","Inteligencia artificial","Machine learning","AnÃƒÂ¡lisis de datos","Big data","Blockchain","Hosting y alojamiento web","Soporte tÃƒÂ©cnico IT","InvestigaciÃƒÂ³n y desarrollo","DiseÃƒÂ±o grÃƒÂ¡fico","DiseÃƒÂ±o industrial","Testing y QA","DevOps","SaaS","Ciencia de datos","IoT","Realidad virtual","GeolocalizaciÃƒÂ³n","Control de calidad","IngenierÃƒÂ­a de software","AuditorÃƒÂ­a tecnolÃƒÂ³gica","ConsultorÃƒÂ­a de IA"]},
-  {n:43,type:"servicio",h:"RestauraciÃƒÂ³n y hospedaje",i:["Restaurante","CafÃƒÂ© y cafeterÃƒÂ­a","Bar","Cantina","Comida rÃƒÂ¡pida","Fast food","PanaderÃƒÂ­a y pastelerÃƒÂ­a","Catering","Servicio de banquetes","Hotel","Hostal","Hospedaje","Motel","Posada","Glamping","Comida a domicilio","Delivery de comida","Food truck","Cocina de autor","Cocina gourmet","Brunch","Sushi","TaquerÃƒÂ­a","PizzerÃƒÂ­a","Hamburguesas","Comida vegana","Comida saludable","Buffet","Airbnb (hospedaje)","Servicio de alimentos para empresas"]},
-  {n:44,type:"servicio",h:"Salud, belleza y veterinaria",i:["Medicina y consulta mÃƒÂ©dica","ClÃƒÂ­nica","Hospital","Servicios de salud","Veterinaria","PeluquerÃƒÂ­a","EstÃƒÂ©tica","SalÃƒÂ³n de belleza","Spa","Masajes","Fisioterapia","PsicologÃƒÂ­a","OdontologÃƒÂ­a y dentista","NutriciÃƒÂ³n","EnfermerÃƒÂ­a","Acupuntura","Tatuajes","MicropigmentaciÃƒÂ³n","Microblading","DepilaciÃƒÂ³n","CosmetologÃƒÂ­a","Bienestar","QuiroprÃƒÂ¡ctica","Terapias alternativas","Medicina estÃƒÂ©tica","CirugÃƒÂ­a estÃƒÂ©tica","Trasplante capilar","OptometrÃƒÂ­a","PodologÃƒÂ­a","JardinerÃƒÂ­a profesional"]},
-  {n:45,type:"servicio",h:"Servicios jurÃƒÂ­dicos y de seguridad",i:["Abogados","Servicios jurÃƒÂ­dicos","NotarÃƒÂ­a","Registro de marcas","ProtecciÃƒÂ³n de datos","AsesorÃƒÂ­a legal","Contratos","ConsultorÃƒÂ­a legal","Servicios de seguridad","Guardia de seguridad","Vigilancia","Alarmas y sistemas de seguridad","Custodia de valores","Servicios funerarios","Cuidado de niÃƒÂ±os","Patentes y propiedad intelectual","Litigios","MediaciÃƒÂ³n y arbitraje","Derecho corporativo","Derecho laboral","GestorÃƒÂ­a","Servicios de detective","ProtecciÃƒÂ³n personal","Servicios de redes sociales en lÃƒÂ­nea"]},
+  {n:14,type:"producto",h:"Joyería y relojería",i:["Joyería","Joyas","Relojes","Anillos","Collares","Pulseras","Aretes y pendientes","Broches","Medallas","Trofeos","Bisuterría fina","Joyería de oro y plata","Diamantes","Piedras preciosas","Plata esterlina","Joyería artesanal","Relojes de lujo","Relojes inteligentes (joyería)"]},
+  {n:15,type:"producto",h:"Instrumentos musicales",i:["Guitarras","Piano y teclados","Violín","Batería","Instrumentos musicales","Micrófonos","Amplificadores","Cuerdas musicales","Trompetas","Saxofones","Flautas","Percusiones","Bajos eléctricos","Ukuleles","Acordeones","Boquillas","Atriles"]},
+  {n:16,type:"producto",h:"Papelería e imprenta",i:["Papelería","Libros","Revistas","Cuadernos","Bolígrafos y plumas","Lápices","Carpetas y archiveros","Material didáctico","Tarjetas de presentación","Material de oficina","Sellos y stickers","Etiquetas","Mapas","Calendarios","Material de impresión","Publicaciones","Periódicos","Material escolar","Agendas","Manualidades","Pintura para niños","Libros de texto","Arte y dibujo","Papel fotográfico"]},
+  {n:17,type:"producto",h:"Caucho y materiales aislantes",i:["Caucho","Goma","Plásticos industriales semielaborados","Tuberías flexibles","Mangueras","Materiales de aislamiento","Hule","Silicona industrial","Sellos y empaques industriales","Materiales para calafatear","Fibra de vidrio","Espuma de poliuretano"]},
+  {n:18,type:"producto",h:"Cuero y equipaje",i:["Bolsas de mano","Mochilas","Maletas y equipaje","Carteras","Billeteras","Monederos","Cinturones","Cuero y piel","Paraguas","Sombrillas","Portafolios","Bolsos de diseñador","Bolsos de playa","Riñoneras","Correas para mascotas","Collares para mascotas","Portabebés","Bolsas de cuero artesanal"]},
+  {n:19,type:"producto",h:"Materiales de construcción",i:["Materiales de construcción","Cemento","Ladrillos y tabiques","Azulejos","Tejas","Yeso","Concreto","Madera para construcción","Pisos","Puertas","Ventanas","Mármol","Granito","Asfalto","Impermeabilizante","Block y tabicón","Arena y grava","Paneles de construcción","Drywall","Muros prefabricados","Losas","Recubrimientos no metálicos"]},
+  {n:20,type:"producto",h:"Muebles y contenedores",i:["Muebles","Sillas","Mesas","Camas","Sofás y sillones","Escritorios","Libreros","Closets","Gabinetes","Espejos","Marcos y cuadros","Cajas de almacenamiento","Canastas","Hamacas","Sillas de oficina","Cocinas integrales","Colchones","Muebles de jardín","Estanterías","Puff y otomanas","Muebles para baño"]},
+  {n:21,type:"producto",h:"Utensilios domésticos",i:["Utensilios de cocina","Ollas y cazuelas","Sartenes","Platos","Vasos y copas","Tazas","Moldes para horno","Recipientes y contenedores","Baterías de cocina","Cepillos de dientes","Esponjas","Porcelana y cerámica","Cristalería","Jarras y termos","Cucharones y espátulas","Peladores y ralladores","Coladores","Tablas para picar","Freidoras de aire"]},
+  {n:22,type:"producto",h:"Cuerdas, redes y materiales",i:["Cuerdas y sogas","Redes","Tiendas de campaña","Carpas","Lonas y toldos","Sacos industriales","Redes de pesca","Redes deportivas","Cuerdas de escalada","Materiales de embalaje textil"]},
+  {n:23,type:"producto",h:"Hilos e hilados",i:["Hilos para coser","Hilados textiles","Lana","Hilo de bordar","Hilo para crochet","Hilo para tejer","Fibras textiles en bruto","Hilo industrial","Hilo de algodón","Hilo de poliéster"]},
+  {n:24,type:"producto",h:"Tejidos y ropa de hogar",i:["Sábanas","Cobijas y cobertores","Manteles","Cortinas","Toallas","Telas y tejidos","Ropa de cama","Fundas","Colchas","Tapetes de tela","Almohadas","Mantelería","Tapices","Telas para tapizar"]},
+  {n:25,type:"producto",h:"Ropa y calzado",i:["Ropa","Playeras y camisetas","Camisas","Pantalones","Faldas","Vestidos","Zapatos","Tenis y sneakers","Botas","Sandalias","Calcetines","Ropa interior","Uniformes","Calzado deportivo","Sombreros y gorras","Ropa deportiva","Trajes y sacos","Jeans","Chaquetas y abrigos","Ropa para bebé","Pijamas","Trajes de baño","Leggings","Sudaderas","Chamarras","Ropa de trabajo","Pantuflas","Trajes de novia","Disfraces"]},
+  {n:26,type:"producto",h:"Mercería y accesorios textiles",i:["Botones","Cierres y cremalleras","Agujas y alfileres","Bordados","Listones y cintas","Encajes","Flores artificiales","Accesorios para el cabello","Diademas","Broches para ropa","Velcro","Elásticos","Parches bordados","Adornos para ropa"]},
+  {n:27,type:"producto",h:"Alfombras y revestimientos de suelo",i:["Alfombras","Tapetes","Pisos laminados","Revestimientos de suelo","Pisos de vinilo","Tapetes decorativos","Pisos de madera","Tapetes de baño","Tapetes de cocina","Pisos de hule","Tapetes antiderrapantes"]},
+  {n:28,type:"producto",h:"Juegos, juguetes y deporte",i:["Juguetes","Juegos de mesa","Videojuegos","Artículos deportivos","Balones y pelotas","Bicicletas de ejercicio","Pesas y mancuernas","Equipos de gimnasio","Raquetas","Patines","Patinetas","Equipo de natación","Material de béisbol","Material de fútbol","Material de básquetbol","Adornos navideños","Muñecas","Figuras de acción","Rompecabezas","Equipo de camping","Dardos","Mesa de ping pong","Cuerdas para saltar","Inflables","Equipos de yoga"]},
+  {n:29,type:"producto",h:"Alimentos cárnicos y lácteos",i:["Carne de res","Carne de pollo","Carne de cerdo","Pescado y mariscos","Leche","Queso","Yogur","Mantequilla","Crema","Embutidos","Jamón","Salchicha","Frutas en conserva","Verduras en conserva","Aceite de oliva","Aceite vegetal","Manteca","Huevos","Atún enlatado","Sardinas","Caldos enlatados","Leche evaporada","Crema ácida","Queso panela","Queso Oaxaca","Proteína animal"]},
+  {n:30,type:"producto",h:"Cereales, panadería y condimentos",i:["Café","Café de especialidad","Café molido","Café en cápsulas","Café orgánico","Té","Cacao","Chocolate","Pan","Pasteles y pastelería","Galletas","Tortillas","Arroz","Pasta y fideos","Harina","Azúcar","Sal","Especias y condimentos","Salsas","Mermeladas","Miel","Helado","Paletas","Dulces y confitería","Cereales para desayuno","Chocolates artesanales","Postres","Panadería artesanal","Snacks","Botanas","Granola"]},
+  {n:31,type:"producto",h:"Productos agrícolas y animales",i:["Frutas frescas","Verduras frescas","Hortalizas","Plantas de ornato","Flores naturales","Semillas para siembra","Animales vivos","Alimentos para mascotas","Comida para perros","Comida para gatos","Granos sin procesar","Maíz","Frijol","Café en grano","Aguacate","Hierbas aromáticas frescas","Cactus","Plantas medicinales","Hongos comestibles"]},
+  {n:32,type:"producto",h:"Cervezas y bebidas sin alcohol",i:["Agua embotellada","Agua purificada","Agua mineralizada","Refrescos","Bebidas energéticas","Jugos y néctares","Bebidas deportivas","Aguas frescas","Té frío","Limonada","Cerveza sin alcohol","Kombucha","Bebidas naturales","Bebidas funcionales","Tepache","Agua de coco","Bebidas de proteínas","Bebidas fermentadas sin alcohol","Cervezas artesanales"]},
+  {n:33,type:"producto",h:"Bebidas alcohólicas",i:["Vino","Tequila","Mezcal","Whisky","Ron","Vodka","Brandy","Licores","Aguardiente","Pulque","Sotol","Raicilla","Destilados artesanales","Cerveza (alcohólica)","Sidra","Gin","Sake","Bebidas alcohólicas de sabores","Amaretto","Champagne"]},
+  {n:34,type:"producto",h:"Tabaco y artículos para fumadores",i:["Cigarros","Tabaco","Puros","Cigarrillos electrónicos","Vapeadores","Vaporizadores","Nicotina","Encendedores","Pipa para tabaco","Tabaco de pipa","Hookah","Shisha","Tabaco sin humo"]},
+  {n:35,type:"servicio",h:"Publicidad y administración de negocios",i:["Publicidad","Marketing","Marketing digital","Gestión de redes sociales","Agencia de publicidad","Consultoría de negocios","Administración empresarial","Recursos humanos","Contabilidad","Servicios de oficina","Branding","Relaciones públicas","SEO y SEM","Social media management","Influencer marketing","Gestión de marca","Franquicias","Outsourcing","Call center","Telemarketing","Agencia de mercadotecnia","Representación comercial","Gestión de e-commerce","Análisis de mercado","Consultoría de ventas","Selección de personal","Headhunting","Producción de contenido","CRM y gestión de clientes","Gestión de eventos empresariales","Nómina y IMSS"]},
+  {n:36,type:"servicio",h:"Finanzas, seguros e inmobiliaria",i:["Servicios financieros","Banca","Créditos y préstamos","Seguros de vida","Seguros de automóvil","Seguros médicos","Seguros empresariales","Fintech","Inversiones","Bolsa de valores","Bienes raíces","Inmobiliaria","Compraventa de propiedades","Administración de propiedades","Arrendamiento","Hipotecas","Cambio de divisas","Criptomonedas","Pagos electrónicos","Procesamiento de pagos","Valuación de inmuebles","Administración de patrimonio","Fondos de inversión","Microfinanzas","Crowdfunding"]},
+  {n:37,type:"servicio",h:"Construcción y reparación",i:["Construcción","Reparación","Mantenimiento","Plomería","Electricista","Albañilería","Pintura de edificios","Remodelación","Renovación","Instalación de aire acondicionado","Instalación eléctrica","Limpieza industrial","Lavado de autos","Taller mecánico","Reparación de electrónicos","Minería","Perforación","Carpintería","Herrería","Impermeabilización","Instalación de paneles solares","Jardinería","Fumigación","Control de plagas","Mantenimiento de albercas","Refrigeración y aire"]},
+  {n:38,type:"servicio",h:"Telecomunicaciones",i:["Telecomunicaciones","Internet","Telefonía","Comunicaciones digitales","Streaming","Transmisión en vivo","Mensajería instantánea","Correo electrónico (servicio)","Redes de comunicación","Televisión por cable","Televisión satelital","Radio","Podcasts","Comunicaciones satelitales","VoIP","Servicio de datos móviles","Redes 5G","Hosting de contenido","Videoconferencias","Radiodifusión"]},
+  {n:39,type:"servicio",h:"Transporte y logística",i:["Transporte","Logística","Mensajería","Paquetería","Delivery","Envíos","Mudanzas","Almacenamiento","Agencia de viajes","Tours y turismo","Carga y flete","Courrier","Servicio de taxi","Transporte en app","Renta de vehículos","Transporte de pasajeros","Distribución","Transporte aéreo","Carga internacional","Aduanas (agente)","Última milla","Cadena de suministro","Almacén frigorífico"]},
+  {n:40,type:"servicio",h:"Tratamiento de materiales",i:["Impresión","Imprenta","Serigrafía","Bordado","Reciclaje","Tratamiento de agua","Purificación","Conservación de alimentos","Procesamiento de materiales","Manufactura por encargo","Corte y ensamblaje","Galvanizado","Tratamiento de madera","Sublimación","Grabado","Pintura industrial","Moldeado","Procesamiento de alimentos","Clasificación y envasado"]},
+  {n:41,type:"servicio",h:"Educación, entretenimiento y deporte",i:["Educación","Escuela y colegio","Universidad","Cursos y talleres","Capacitación y entrenamiento","Coaching","Tutorías","Clases en línea","E-learning","Plataformas educativas","Entretenimiento","Teatro","Conciertos y eventos","Producción de contenido","Fotografía","Videografía","Cine y producción audiovisual","Publicaciones y edición","Deportes","Clubes deportivos","Actividades culturales","Producción musical","Estudio de grabación","Streaming de entretenimiento","Gaming en línea","Parques de diversión","Biblioteca y museos","Clases de idiomas","Yoga y meditación","Fitness y gimnasio"]},
+  {n:42,type:"servicio",h:"Servicios científicos y tecnológicos",i:["Desarrollo de software","Programación","Desarrollo web","Desarrollo de apps","Diseño web","UX/UI design","Consultoría tecnológica","Cloud computing","Ciberseguridad","Inteligencia artificial","Machine learning","Análisis de datos","Big data","Blockchain","Hosting y alojamiento web","Soporte técnico IT","Investigación y desarrollo","Diseño gráfico","Diseño industrial","Testing y QA","DevOps","SaaS","Ciencia de datos","IoT","Realidad virtual","Geolocalización","Control de calidad","Ingeniería de software","Auditoría tecnológica","Consultoría de IA"]},
+  {n:43,type:"servicio",h:"Restauración y hospedaje",i:["Restaurante","Café y cafetería","Bar","Cantina","Comida rápida","Fast food","Panadería y pastelería","Catering","Servicio de banquetes","Hotel","Hostal","Hospedaje","Motel","Posada","Glamping","Comida a domicilio","Delivery de comida","Food truck","Cocina de autor","Cocina gourmet","Brunch","Sushi","Taquería","Pizzería","Hamburguesas","Comida vegana","Comida saludable","Buffet","Airbnb (hospedaje)","Servicio de alimentos para empresas"]},
+  {n:44,type:"servicio",h:"Salud, belleza y veterinaria",i:["Medicina y consulta médica","Clínica","Hospital","Servicios de salud","Veterinaria","Peluquería","Estética","Salón de belleza","Spa","Masajes","Fisioterapia","Psicología","Odontología y dentista","Nutrición","Enfermería","Acupuntura","Tatuajes","Micropigmentación","Microblading","Depilación","Cosmetología","Bienestar","Quiropráctica","Terapias alternativas","Medicina estética","Cirugía estética","Trasplante capilar","Optometría","Podología","Jardinería profesional"]},
+  {n:45,type:"servicio",h:"Servicios jurídicos y de seguridad",i:["Abogados","Servicios jurídicos","Notaría","Registro de marcas","Protección de datos","Asesoría legal","Contratos","Consultoría legal","Servicios de seguridad","Guardia de seguridad","Vigilancia","Alarmas y sistemas de seguridad","Custodia de valores","Servicios funerarios","Cuidado de niños","Patentes y propiedad intelectual","Litigios","Mediación y arbitraje","Derecho corporativo","Derecho laboral","Gestoría","Servicios de detective","Protección personal","Servicios de redes sociales en línea"]},
 ];
 
 let _giroFilter = 'all';
@@ -1204,7 +1204,7 @@ function renderGiroGrid(){
       +'<span class="giro-heading-text">'+hl(cls.h)+'</span>'
       +'<span class="giro-type-pill '+pillCls+'">'+pillLabel+'</span>'
       +'<span class="giro-item-count">'+cls.i.length+'</span>'
-      +'<span class="giro-chevron">Ã¢â€“Â¾</span>'
+      +'<span class="giro-chevron">▾</span>'
       +'</div>'
       +'<div class="giro-items-wrap">'+(itemsHtml||'<span style="color:var(--muted);font-size:11px">Sin coincidencias en esta clase</span>')+'</div>'
       +'</div>';
@@ -1239,7 +1239,7 @@ function selectGiro(cls, category, item, type){
   if(banner) banner.classList.add('show');
   if(clsEl)  clsEl.textContent  = 'Clase '+cls;
   if(catEl)  catEl.textContent  = item;
-  if(descEl) descEl.textContent = 'Clase Niza '+cls+' Ã¢â‚¬â€ '+category;
+  if(descEl) descEl.textContent = 'Clase Niza '+cls+' — '+category;
   setTimeout(()=>{ document.getElementById('btn-continuar-2')?.scrollIntoView({behavior:'smooth',block:'nearest'}); },150);
 }
 
@@ -1253,9 +1253,9 @@ function clearGiro(){
 
 (function(){ renderGiroGrid(); })();
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // ANALYSIS TYPE SELECTION
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function toggleAnalysis(type){
   selectedAnalysis[type] = !selectedAnalysis[type];
   const card=document.getElementById('at-'+type);
@@ -1271,17 +1271,17 @@ function toggleAnalysis(type){
 // init checkmarks
 document.querySelectorAll('.at-check').forEach(c=>c.classList.add('selected'));
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // BRAND MANAGEMENT
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function addBrand(){
   syncBrandList();
-  if(brandList.length>=10){showToast('MÃƒÂ¡ximo 10 marcas');return;}
+  if(brandList.length>=10){showToast('Máximo 10 marcas');return;}
   brandList.push('');
   renderBrandList();
 }
 function removeBrand(idx){
-  if(brandList.length<=1){showToast('MÃƒÂ­nimo una marca','info');return;}
+  if(brandList.length<=1){showToast('Mínimo una marca','info');return;}
   brandList.splice(idx,1);
   renderBrandList();
 }
@@ -1297,7 +1297,7 @@ function renderBrandList(){
       <input type="text" class="brand-input" value="${b}" placeholder="Ej. QUANTUM TECH"
         autocomplete="off" spellcheck="false"
         oninput="brandList[${i}]=this.value.trim()"/>
-      ${brandList.length>1?`<button class="btn-del-brand" onclick="removeBrand(${i})">Ã¢Å“â€¢</button>`:''}
+      ${brandList.length>1?`<button class="btn-del-brand" onclick="removeBrand(${i})">✕</button>`:''}
     </div>`;
   }).join('');
   const inputs=el.querySelectorAll('.brand-input');
@@ -1315,18 +1315,18 @@ function updateStars(){
     const btn=document.getElementById('star-'+i); if(!btn)return;
     const v=inp.value.trim();
     const s=v&&favorites.includes(v);
-    btn.textContent=s?'Ã¢Ëœâ€¦':'Ã¢Ëœâ€ ';
+    btn.textContent=s?'★':'☆';
     btn.classList.toggle('saved',s);
   });
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // FAVORITES
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function toggleFavorite(brand){
   const idx=favorites.indexOf(brand);
   if(idx>=0){favorites.splice(idx,1);showToast(brand+' removida','info');}
-  else{favorites.push(brand);showToast('Ã¢Ëœâ€¦ '+brand+' guardada','info');}
+  else{favorites.push(brand);showToast('★ '+brand+' guardada','info');}
   localStorage.setItem('tim_fav',JSON.stringify(favorites));
   renderFavGrid(); updateFavBadge(); updateStars();
 }
@@ -1335,8 +1335,8 @@ function renderFavGrid(){
   if(!g)return;
   if(!favorites.length){g.innerHTML='<span class="fav-empty">Sin marcas guardadas</span>';return;}
   g.innerHTML=favorites.map(b=>`<span class="fav-chip" onclick="prefillBrand('${b.replace(/'/g,"\\'")}')">
-    Ã¢Ëœâ€¦ ${b}
-    <span class="fav-chip-del" onclick="event.stopPropagation();toggleFavorite('${b.replace(/'/g,"\\'")}')">Ã¢Å“â€¢</span>
+    ★ ${b}
+    <span class="fav-chip-del" onclick="event.stopPropagation();toggleFavorite('${b.replace(/'/g,"\\'")}')">✕</span>
   </span>`).join('');
 }
 function updateFavBadge(){
@@ -1348,17 +1348,17 @@ function prefillBrand(name){
   const ei=brandList.findIndex(b=>!b.trim());
   if(ei>=0){brandList[ei]=name;}else{brandList.push(name);}
   renderBrandList();
-  showToast('"'+name+'" aÃƒÂ±adida','info');
+  showToast('"'+name+'" añadida','info');
 }
 function saveSession(){
-  try{localStorage.setItem('tim_session',JSON.stringify({brandResults,favorites,criteriaConfig,criteriaMode,ts:Date.now()}));showToast('SesiÃƒÂ³n guardada','info');}catch(e){showToast('Error al guardar');}
+  try{localStorage.setItem('tim_session',JSON.stringify({brandResults,favorites,criteriaConfig,criteriaMode,ts:Date.now()}));showToast('Sesión guardada','info');}catch(e){showToast('Error al guardar');}
 }
 function loadSession(){
   try{
     const raw=localStorage.getItem('tim_session');
-    if(!raw){showToast('Sin sesiÃƒÂ³n guardada','info');return;}
+    if(!raw){showToast('Sin sesión guardada','info');return;}
     const s=JSON.parse(raw);
-    if(!confirm('Cargar sesiÃƒÂ³n del '+new Date(s.ts).toLocaleString()+'?'))return;
+    if(!confirm('Cargar sesión del '+new Date(s.ts).toLocaleString()+'?'))return;
     brandResults=s.brandResults||{};
     favorites=s.favorites||[];
     criteriaConfig={...CRITERIA_DEFAULT,...(s.criteriaConfig||{})};
@@ -1370,19 +1370,19 @@ function loadSession(){
       setupTabs(brands);
       Object.keys(brandResults).forEach(i=>{ const br=brandResults[i]; renderBrandTab(Number(i),br.brand,{ompi_rows:br.ompi,impi_rows:br.impi,combined:br.riesgo,conflicto:br.conflicto,hay_concesion_global:br.hay_concesion_global,file:br.file}); });
     }
-    showToast('SesiÃƒÂ³n cargada','info');
+    showToast('Sesión cargada','info');
   }catch(e){showToast('Error al cargar');}
 }
 function clearSession(){
-  if(!confirm('Limpiar seguimiento y sesiÃƒÂ³n guardada?'))return;
+  if(!confirm('Limpiar seguimiento y sesión guardada?'))return;
   favorites=[];
   localStorage.removeItem('tim_fav');localStorage.removeItem('tim_session');
   renderFavGrid();updateFavBadge();showToast('Limpiado','info');
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // CLASS MODE
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 document.querySelectorAll('.mode-btn').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));
@@ -1407,12 +1407,12 @@ function renderClaseChips(){
   const a=document.getElementById('cls-chips');
   if(!selectedClases.length){a.className='cls-chips-area empty';a.innerHTML='';return;}
   a.className='cls-chips-area';
-  a.innerHTML=selectedClases.map(v=>`<span class="cls-chip">Clase ${v}<span class="cls-chip-del" onclick="removeClase(${v})">Ã¢Å“â€¢</span></span>`).join('');
+  a.innerHTML=selectedClases.map(v=>`<span class="cls-chip">Clase ${v}<span class="cls-chip-del" onclick="removeClase(${v})">✕</span></span>`).join('');
 }
 const _clsNumEl = document.getElementById('cls-num');
 if(_clsNumEl) _clsNumEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addClase();}});
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Per-brand class mode Ã¢â€â‚¬Ã¢â€â‚¬
+// ── Per-brand class mode ──
 function togglePbMode(){
   perBrandMode=!perBrandMode;
   const btn=document.getElementById('btn-pbmode');
@@ -1432,31 +1432,31 @@ function renderPbPickers(){
   const brands=brandList.map((b,i)=>({b:b||'Marca '+(i+1),i}));
   pw.innerHTML=brands.map(({b,i})=>{
     const cls=brandClases[i]||[];
-    const summary=cls.length?cls.length+' clase(s)':'Todas (1Ã¢â‚¬â€œ45)';
+    const summary=cls.length?cls.length+' clase(s)':'Todas (1–45)';
     const hasCls=cls.length>0;
     return `<div class="pb-brand-row">
       <div class="pb-brand-hdr" onclick="togglePbRow(${i})">
         <span class="pb-brand-num">${i+1}</span>
         <span class="pb-brand-name">${b}</span>
         <span class="pb-summary${hasCls?' has':''}" id="pb-sum-${i}">${summary}</span>
-        <span style="color:var(--muted);font-size:11px" id="pb-chev-${i}">Ã¢â€“Â¾</span>
+        <span style="color:var(--muted);font-size:11px" id="pb-chev-${i}">▾</span>
       </div>
       <div class="pb-brand-body" id="pb-body-${i}">
         <div class="pb-mode-grid" id="pb-mg-${i}">
-          <button class="mode-btn${!hasCls?' active':''}" data-pbmode="T" onclick="setPbMode(${i},'T',this)">Todas<span class="mode-sub">1Ã¢â‚¬â€œ45</span></button>
-          <button class="mode-btn" data-pbmode="S" onclick="setPbMode(${i},'S',this)">Servicios<span class="mode-sub">35Ã¢â‚¬â€œ45</span></button>
-          <button class="mode-btn" data-pbmode="P" onclick="setPbMode(${i},'P',this)">Productos<span class="mode-sub">1Ã¢â‚¬â€œ34</span></button>
+          <button class="mode-btn${!hasCls?' active':''}" data-pbmode="T" onclick="setPbMode(${i},'T',this)">Todas<span class="mode-sub">1–45</span></button>
+          <button class="mode-btn" data-pbmode="S" onclick="setPbMode(${i},'S',this)">Servicios<span class="mode-sub">35–45</span></button>
+          <button class="mode-btn" data-pbmode="P" onclick="setPbMode(${i},'P',this)">Productos<span class="mode-sub">1–34</span></button>
           <button class="mode-btn${hasCls?' active':''}" data-pbmode="M" onclick="setPbMode(${i},'M',this)">Manual<span class="mode-sub">Custom</span></button>
         </div>
         <div id="pb-manual-${i}" style="${hasCls?'':'display:none'}">
           <div class="cls-add-row" style="margin-top:10px">
-            <input type="number" id="pb-inp-${i}" class="cls-num-input" min="1" max="45" placeholder="1Ã¢â‚¬â€œ45"
+            <input type="number" id="pb-inp-${i}" class="cls-num-input" min="1" max="45" placeholder="1–45"
               onkeydown="if(event.key==='Enter'){event.preventDefault();addClaseFor(${i});}"/>
             <button class="btn-agregar-clase" onclick="addClaseFor(${i})">+ AGREGAR</button>
             <button class="cls-clear-btn" onclick="clearClasesFor(${i})">Limpiar</button>
           </div>
           <div class="cls-chips-area${hasCls?'':' empty'}" id="pb-chips-${i}"></div>
-          <div class="cls-dup-warn" id="pb-dup-${i}">Ã¢Å¡Â  Ya seleccionada</div>
+          <div class="cls-dup-warn" id="pb-dup-${i}">⚠ Ya seleccionada</div>
         </div>
       </div>
     </div>`;
@@ -1500,22 +1500,22 @@ function renderClasesFor(i){
   const cls=brandClases[i]||[];
   if(!cls.length){a.className='cls-chips-area empty';a.innerHTML='';return;}
   a.className='cls-chips-area';
-  a.innerHTML=cls.map(v=>`<span class="cls-chip">Clase ${v}<span class="cls-chip-del" onclick="removeClaseFor(${i},${v})">Ã¢Å“â€¢</span></span>`).join('');
+  a.innerHTML=cls.map(v=>`<span class="cls-chip">Clase ${v}<span class="cls-chip-del" onclick="removeClaseFor(${i},${v})">✕</span></span>`).join('');
 }
 function updatePbSum(i){
   const s=document.getElementById('pb-sum-'+i); if(!s)return;
   const cls=brandClases[i]||[];
   const mode=brandModes[i]||'T';
-  if(mode==='M'&&cls.length){s.textContent=cls.length+' clase(s) Ã‚Â· '+cls.join(', ');s.className='pb-summary has';}
-  else if(mode==='T'){s.textContent='Todas (1Ã¢â‚¬â€œ45)';s.className='pb-summary';}
-  else if(mode==='S'){s.textContent='Servicios (35Ã¢â‚¬â€œ45)';s.className='pb-summary';}
-  else if(mode==='P'){s.textContent='Productos (1Ã¢â‚¬â€œ34)';s.className='pb-summary';}
+  if(mode==='M'&&cls.length){s.textContent=cls.length+' clase(s) · '+cls.join(', ');s.className='pb-summary has';}
+  else if(mode==='T'){s.textContent='Todas (1–45)';s.className='pb-summary';}
+  else if(mode==='S'){s.textContent='Servicios (35–45)';s.className='pb-summary';}
+  else if(mode==='P'){s.textContent='Productos (1–34)';s.className='pb-summary';}
   else{s.textContent='Sin clases';s.className='pb-summary';}
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // CRITERIA CONFIG
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function setCfgMode(mode){
   criteriaMode=mode;
   const cd=document.getElementById('cfg-def');if(cd)cd.classList.toggle('active',mode==='default');
@@ -1530,13 +1530,13 @@ function resetCrit(){criteriaConfig={...CRITERIA_DEFAULT};syncSliders();Object.k
 function syncSliders(){
   const c=criteriaConfig;
   ['dist','sim','conf','conc'].forEach(k=>{const s=document.getElementById('sl-'+k);if(s)s.value=c[k];});
-  const dv=document.getElementById('dv-dist');if(dv)dv.textContent='Ã¢â€°Â¤'+c.dist+'%';
-  const sv=document.getElementById('dv-sim');if(sv)sv.textContent='Ã¢â€°Â¥'+c.sim+'%';
-  const cv=document.getElementById('dv-conf');if(cv)cv.textContent='Ã¢â€°Â¥'+c.conf+'%';
-  const nv=document.getElementById('dv-conc');if(nv)nv.textContent='Ã¢â€°Â¤'+c.conc+'%';
+  const dv=document.getElementById('dv-dist');if(dv)dv.textContent='≤'+c.dist+'%';
+  const sv=document.getElementById('dv-sim');if(sv)sv.textContent='≥'+c.sim+'%';
+  const cv=document.getElementById('dv-conf');if(cv)cv.textContent='≥'+c.conf+'%';
+  const nv=document.getElementById('dv-conc');if(nv)nv.textContent='≤'+c.conc+'%';
   const cvn=document.getElementById('crit-val');if(cvn)cvn.textContent=c.minCount;
-  ['mc1','mc2','mc3','mc4'].forEach((id,idx)=>{const el=document.getElementById(id);if(!el)return;const vals=['Ã¢â€°Â¤'+c.dist+'%','Ã¢â€°Â¥'+c.sim+'%','Ã¢â€°Â¥'+c.conf+'%','Ã¢â€°Â¤'+c.conc+'%'];el.textContent=vals[idx];});
-  const r=document.getElementById('mc-rule');if(r)r.textContent='Ã¢â€°Â¤'+(c.minCount-1)+' criterio'+(c.minCount-1!==1?'s':'')+' activo'+(c.minCount-1!==1?'s':'');
+  ['mc1','mc2','mc3','mc4'].forEach((id,idx)=>{const el=document.getElementById(id);if(!el)return;const vals=['≤'+c.dist+'%','≥'+c.sim+'%','≥'+c.conf+'%','≤'+c.conc+'%'];el.textContent=vals[idx];});
+  const r=document.getElementById('mc-rule');if(r)r.textContent='≤'+(c.minCount-1)+' criterio'+(c.minCount-1!==1?'s':'')+' activo'+(c.minCount-1!==1?'s':'');
   const m=document.getElementById('mc-min');if(m)m.textContent=c.minCount;
 }
 function evalClient(r){
@@ -1557,9 +1557,9 @@ function evalClient(r){
   const c4=probConc<=c.conc/100;
   const active=[c1,c2,c3,c4].filter(Boolean).length;
   const parts=[];
-  if(c1)parts.push('C1:DistÃ¢â€°Â¤'+c.dist+'%');if(c2)parts.push('C2:SimÃ¢â€°Â¥'+c.sim+'%');
-  if(c3)parts.push('C3:ConfÃ¢â€°Â¥'+c.conf+'%');if(c4)parts.push('C4:ConcÃ¢â€°Â¤'+c.conc+'%');
-  return{hay_concesion:active<c.minCount,criterios_activos:active,criterios_texto:parts.join(' Ã‚Â· ')||'Ninguno'};
+  if(c1)parts.push('C1:Dist≤'+c.dist+'%');if(c2)parts.push('C2:Sim≥'+c.sim+'%');
+  if(c3)parts.push('C3:Conf≥'+c.conf+'%');if(c4)parts.push('C4:Conc≤'+c.conc+'%');
+  return{hay_concesion:active<c.minCount,criterios_activos:active,criterios_texto:parts.join(' · ')||'Ninguno'};
 }
 function recompute(idx){
   const br=brandResults[idx]; if(!br)return;
@@ -1584,9 +1584,9 @@ function recompute(idx){
   const cf4El=document.getElementById('k-cf4-'+idx); if(cf4El)cf4El.textContent=cf4;
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // ANALYSIS START
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 const STEPS=[
   {id:'model',label:'Modelo ML',match:/Entrenando|Modelo listo/i,pct:15},
   {id:'impi',label:'IMPI',match:/Iniciando scraping IMPI|Marcanet/i,pct:55},
@@ -1618,7 +1618,7 @@ function startAnalysis(){
 
   brandResults={};
   const btn=document.getElementById('run-btn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>ANALIZANDOÃ¢â‚¬Â¦';
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>ANALIZANDO…';
 
   setupTabs(brands);
 
@@ -1627,7 +1627,7 @@ function startAnalysis(){
     const {mode,raw}=classArr[idx];
     chain=chain.then(()=>runBrand(brand,idx,raw,skipOmpi,skipImpi,headed,mode));
   });
-  chain.then(()=>{btn.disabled=false;btn.innerHTML='Ã¢â€“Â¶ LANZAR ANÃƒÂLISIS';});
+  chain.then(()=>{btn.disabled=false;btn.innerHTML='▶ LANZAR ANÁLISIS';});
 }
 
 function setupTabs(brands){
@@ -1672,9 +1672,9 @@ function switchToCompare(){
   if(ca){ca.style.display='block';buildCompareView();}
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // BRAND HTML TEMPLATE
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function buildBrandHTML(brand,idx){
   return `
   <!-- Progress -->
@@ -1690,7 +1690,7 @@ function buildBrandHTML(brand,idx){
 
   <!-- Export All -->
   <div id="exp-${idx}" style="display:none;text-align:right;margin:8px 0 4px">
-    <button class="btn-sm" onclick="exportAll(${idx})" style="background:var(--blue)">Ã¢â€ â€œ EXPORTAR TODO - XLSX</button>
+    <button class="btn-sm" onclick="exportAll(${idx})" style="background:var(--blue)">↓ EXPORTAR TODO - XLSX</button>
   </div>
 
   <!-- 2x2 Results Grid -->
@@ -1701,22 +1701,22 @@ function buildBrandHTML(brand,idx){
       <div class="result-panel-hdr">
         <span class="result-panel-title">Registro Legal de Marca</span>
         <span class="aa-status-badge" id="aab-marca-${idx}" style="display:none"></span>
-        <button class="btn-sm outline" onclick="exportFor(${idx},'conflicto')" style="flex-shrink:0;margin-left:8px">Ã¢â€ â€œ XLSX</button>
+        <button class="btn-sm outline" onclick="exportFor(${idx},'conflicto')" style="flex-shrink:0;margin-left:8px">↓ XLSX</button>
       </div>
       <div class="result-panel-body" id="aab-body-marca-${idx}">
         <div class="kpi-strip" id="kpi-${idx}">
-          <div class="kpi-item"><div class="kpi-label">Marcas IMPI</div><div class="kpi-num blue" id="k-impi-${idx}">Ã¢â‚¬â€</div></div>
-          <div class="kpi-item"><div class="kpi-label">Conflictos Totales</div><div class="kpi-num red" id="k-cf-${idx}">Ã¢â‚¬â€</div></div>
-          <div class="kpi-item"><div class="kpi-label">CrÃƒÂ­ticos (4/4)</div><div class="kpi-num red" id="k-cf4-${idx}">Ã¢â‚¬â€</div></div>
-          <div class="kpi-item"><div class="kpi-label">Resultado</div><div class="kpi-num" id="k-risk-${idx}" style="font-size:12px;line-height:1.3;white-space:nowrap">Ã¢â‚¬â€</div></div>
+          <div class="kpi-item"><div class="kpi-label">Marcas IMPI</div><div class="kpi-num blue" id="k-impi-${idx}">—</div></div>
+          <div class="kpi-item"><div class="kpi-label">Conflictos Totales</div><div class="kpi-num red" id="k-cf-${idx}">—</div></div>
+          <div class="kpi-item"><div class="kpi-label">Críticos (4/4)</div><div class="kpi-num red" id="k-cf4-${idx}">—</div></div>
+          <div class="kpi-item"><div class="kpi-label">Resultado</div><div class="kpi-num" id="k-risk-${idx}" style="font-size:12px;line-height:1.3;white-space:nowrap">—</div></div>
         </div>
         <div class="rs" id="rs-cf-${idx}">
           <div class="rs-hdr">
             <div class="rs-icon" id="cf-icon-${idx}" style="background:var(--red-bg);font-size:11px">!</div>
             <span class="rs-title" id="cf-title-${idx}">Marcas en Conflicto</span>
-            <span class="rs-count" id="cnt-cf-${idx}">Ã¢â‚¬â€</span>
+            <span class="rs-count" id="cnt-cf-${idx}">—</span>
             <div class="rs-actions">
-              <button class="btn-sm" onclick="exportFor(${idx},'conflicto')">Ã¢â€ â€œ XLSX</button>
+              <button class="btn-sm" onclick="exportFor(${idx},'conflicto')">↓ XLSX</button>
             </div>
           </div>
           <div class="conf-status-bar" id="cf-bar-${idx}">
@@ -1724,7 +1724,7 @@ function buildBrandHTML(brand,idx){
             <span class="cgs-text" id="cgs-txt-${idx}"></span>
             <span style="font-size:11px;color:var(--muted)" id="cgs-sub-${idx}"></span>
           </div>
-          <div id="cf-body-${idx}"><div class="empty-state">AnÃƒÂ¡lisis en curso...</div></div>
+          <div id="cf-body-${idx}"><div class="empty-state">Análisis en curso...</div></div>
         </div>
       </div>
     </div>
@@ -1734,10 +1734,10 @@ function buildBrandHTML(brand,idx){
       <div class="result-panel-hdr">
         <span class="result-panel-title">Visible en Redes Sociales</span>
         <span class="aa-status-badge" id="aab-social-${idx}" style="display:none"></span>
-        <button class="btn-sm outline" onclick="exportSocial(${idx})" style="flex-shrink:0;margin-left:8px">Ã¢â€ â€œ XLSX</button>
+        <button class="btn-sm outline" onclick="exportSocial(${idx})" style="flex-shrink:0;margin-left:8px">↓ XLSX</button>
       </div>
       <div class="result-panel-body">
-        <div id="social-body-${idx}"><div class="empty-state">VerificaciÃƒÂ³n en curso...</div></div>
+        <div id="social-body-${idx}"><div class="empty-state">Verificación en curso...</div></div>
       </div>
     </div>
 
@@ -1746,10 +1746,10 @@ function buildBrandHTML(brand,idx){
       <div class="result-panel-hdr">
         <span class="result-panel-title">DOMINIOS WEB</span>
         <span class="aa-status-badge" id="aab-domain-${idx}" style="display:none"></span>
-        <button class="btn-sm outline" onclick="exportDomain(${idx})" style="flex-shrink:0;margin-left:8px">Ã¢â€ â€œ XLSX</button>
+        <button class="btn-sm outline" onclick="exportDomain(${idx})" style="flex-shrink:0;margin-left:8px">↓ XLSX</button>
       </div>
       <div class="result-panel-body">
-        <div id="domain-body-${idx}"><div class="empty-state">VerificaciÃƒÂ³n en curso...</div></div>
+        <div id="domain-body-${idx}"><div class="empty-state">Verificación en curso...</div></div>
       </div>
     </div>
 
@@ -1758,10 +1758,10 @@ function buildBrandHTML(brand,idx){
       <div class="result-panel-hdr">
         <span class="result-panel-title">EMPRESAS EXISTENTES</span>
         <span class="aa-status-badge" id="aab-mua-${idx}" style="display:none"></span>
-        <button class="btn-sm outline" onclick="exportMua(${idx})" style="flex-shrink:0;margin-left:8px">Ã¢â€ â€œ XLSX</button>
+        <button class="btn-sm outline" onclick="exportMua(${idx})" style="flex-shrink:0;margin-left:8px">↓ XLSX</button>
       </div>
       <div class="result-panel-body">
-        <div id="mua-body-${idx}"><div class="empty-state">VerificaciÃƒÂ³n en curso...</div></div>
+        <div id="mua-body-${idx}"><div class="empty-state">Verificación en curso...</div></div>
       </div>
     </div>
 
@@ -1772,15 +1772,15 @@ function buildBrandHTML(brand,idx){
     <div id="aah-siga-${idx}"></div>
     <div id="aab-body-siga-${idx}">
       <div class="siga-period-banner" id="siga-period-${idx}" style="display:none">
-        <span class="siga-period-label">PerÃƒÂ­odo analizado:</span>
+        <span class="siga-period-label">Período analizado:</span>
         <span class="siga-period-range" id="siga-period-range-${idx}"></span>
         <span class="siga-period-dias" id="siga-period-dias-${idx}"></span>
       </div>
       <div class="kpi-strip" id="siga-kpi-${idx}">
-        <div class="kpi-item"><div class="kpi-label">Solicitudes</div><div class="kpi-num blue" id="sk-total-${idx}">Ã¢â‚¬â€</div></div>
-        <div class="kpi-item"><div class="kpi-label">Clases Niza</div><div class="kpi-num purple" id="sk-clases-${idx}">Ã¢â‚¬â€</div></div>
-        <div class="kpi-item"><div class="kpi-label">Conflictos</div><div class="kpi-num red" id="sk-cf-${idx}">Ã¢â‚¬â€</div></div>
-        <div class="kpi-item"><div class="kpi-label">Existencia de Riesgo</div><div class="kpi-num" id="sk-risk-${idx}" style="font-size:13px;line-height:1.3;white-space:nowrap">Ã¢â‚¬â€</div></div>
+        <div class="kpi-item"><div class="kpi-label">Solicitudes</div><div class="kpi-num blue" id="sk-total-${idx}">—</div></div>
+        <div class="kpi-item"><div class="kpi-label">Clases Niza</div><div class="kpi-num purple" id="sk-clases-${idx}">—</div></div>
+        <div class="kpi-item"><div class="kpi-label">Conflictos</div><div class="kpi-num red" id="sk-cf-${idx}">—</div></div>
+        <div class="kpi-item"><div class="kpi-label">Existencia de Riesgo</div><div class="kpi-num" id="sk-risk-${idx}" style="font-size:13px;line-height:1.3;white-space:nowrap">—</div></div>
       </div>
       <div class="stats-section" id="siga-stats-${idx}" style="display:none;margin-bottom:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
@@ -1789,15 +1789,15 @@ function buildBrandHTML(brand,idx){
             <div class="chart-canvas-rel"><canvas id="siga-chart-crit-${idx}"></canvas></div>
           </div>
           <div class="card" style="padding:16px">
-            <div class="card-title" style="margin-bottom:8px">ProporciÃƒÂ³n de Conflicto</div>
+            <div class="card-title" style="margin-bottom:8px">Proporción de Conflicto</div>
             <div class="chart-canvas-rel"><canvas id="siga-chart-conf-${idx}"></canvas></div>
           </div>
         </div>
         <div id="siga-cls-wrap-${idx}" style="display:none">
           <button class="cls-toggle-btn" id="siga-cls-btn-${idx}" onclick="toggleSigaClsStats(${idx})">
-            <span>Desglose por Clase Niza Ã¢â‚¬â€ SIGA</span>
+            <span>Desglose por Clase Niza — SIGA</span>
             <span style="font-weight:400;color:var(--muted2)" id="siga-cls-btn-sub-${idx}"></span>
-            <span style="margin-left:auto;font-size:10px" id="siga-cls-btn-chev-${idx}">Ã¢â€“Â¾</span>
+            <span style="margin-left:auto;font-size:10px" id="siga-cls-btn-chev-${idx}">▾</span>
           </button>
           <div class="cls-charts-grid" id="siga-cls-grid-${idx}"></div>
         </div>
@@ -1805,10 +1805,10 @@ function buildBrandHTML(brand,idx){
       <div class="rs" id="siga-rs-cf-${idx}">
         <div class="rs-hdr">
           <div class="rs-icon" id="siga-cf-icon-${idx}" style="background:var(--red-bg)"></div>
-          <span class="rs-title">Marcas en Conflicto Ã¢â‚¬â€ Oposiciones</span>
-          <span class="rs-count" id="siga-cnt-cf-${idx}">Ã¢â‚¬â€</span>
+          <span class="rs-title">Marcas en Conflicto — Oposiciones</span>
+          <span class="rs-count" id="siga-cnt-cf-${idx}">—</span>
           <div class="rs-actions">
-            <button class="btn-sm" onclick="exportSigaFor(${idx},'conflicto')">Ã¢â€ â€œ XLSX</button>
+            <button class="btn-sm" onclick="exportSigaFor(${idx},'conflicto')">↓ XLSX</button>
           </div>
         </div>
         <div class="conf-status-bar" id="siga-cf-bar-${idx}">
@@ -1816,19 +1816,19 @@ function buildBrandHTML(brand,idx){
           <span class="cgs-text" id="siga-cgs-txt-${idx}"></span>
           <span style="font-size:11px;color:var(--muted)" id="siga-cgs-sub-${idx}"></span>
         </div>
-        <div id="siga-cf-body-${idx}"><div class="empty-state">AnÃƒÂ¡lisis en curso...</div></div>
+        <div id="siga-cf-body-${idx}"><div class="empty-state">Análisis en curso...</div></div>
       </div>
       <div class="rs">
         <div class="rs-hdr">
           <div class="rs-icon" style="background:#fef9c3;color:#854d0e"></div>
-          <span class="rs-title">Solicitudes SIGA Ã¢â‚¬â€ AnÃƒÂ¡lisis de Riesgo</span>
-          <span class="rs-count" id="siga-cnt-riesgo-${idx}">Ã¢â‚¬â€</span>
+          <span class="rs-title">Solicitudes SIGA — Análisis de Riesgo</span>
+          <span class="rs-count" id="siga-cnt-riesgo-${idx}">—</span>
           <div class="rs-actions">
             <button class="btn-sm outline" onclick="openCritModal()">Criterios</button>
-            <button class="btn-sm" onclick="exportSigaFor(${idx},'riesgo')">Ã¢â€ â€œ XLSX</button>
+            <button class="btn-sm" onclick="exportSigaFor(${idx},'riesgo')">↓ XLSX</button>
           </div>
         </div>
-        <div class="tbl-wrap" id="siga-tbl-riesgo-${idx}"><div class="empty-state">AnÃƒÂ¡lisis en curso...</div></div>
+        <div class="tbl-wrap" id="siga-tbl-riesgo-${idx}"><div class="empty-state">Análisis en curso...</div></div>
       </div>
     </div>
   </div>
@@ -1843,9 +1843,9 @@ function toggleAcc(type,idx){
   hdr.classList.toggle('open',open);
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // RUN ONE BRAND
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function runBrand(brand,idx,classesRaw,skipOmpi,skipImpi,headed,modeOverride){
   return new Promise(resolve=>{
     const dot=document.getElementById('bdot-'+idx);
@@ -1854,7 +1854,7 @@ function runBrand(brand,idx,classesRaw,skipOmpi,skipImpi,headed,modeOverride){
 
     const ss={};STEPS.forEach(s=>ss[s.id]='pending');
     const pw=document.getElementById('pw-'+idx);
-    if(pw){pw.classList.add('show');document.getElementById('pb-'+idx).style.width='3%';document.getElementById('pl-'+idx).textContent='Iniciando anÃƒÂ¡lisis...';document.getElementById('pe-'+idx).textContent='Estimado: ~2-5 min';}
+    if(pw){pw.classList.add('show');document.getElementById('pb-'+idx).style.width='3%';document.getElementById('pl-'+idx).textContent='Iniciando análisis...';document.getElementById('pe-'+idx).textContent='Estimado: ~2-5 min';}
     renderSteps(idx,ss);
 
     let elapsed=0;
@@ -1880,7 +1880,7 @@ function runBrand(brand,idx,classesRaw,skipOmpi,skipImpi,headed,modeOverride){
       es.addEventListener('log',e=>{
         tickSteps(idx,ss,e.data);
         const pd=document.getElementById('pd-'+idx);
-        if(pd){const cl=e.data.replace(/[Ã°Å¸â€Â§Ã°Å¸Å’ÂÃ°Å¸â€œÅ Ã¢Å“â€¦Ã¢Å¡Â Ã¯Â¸ÂÃ¢ÂÅ’]/g,'').trim();if(cl.length>3)pd.textContent=cl.slice(0,90);}
+        if(pd){const cl=e.data.replace(/[🔧🌐📊✅⚠️❌]/g,'').trim();if(cl.length>3)pd.textContent=cl.slice(0,90);}
       });
       es.addEventListener('done',e=>{
         es.close();clearInterval(timer);
@@ -1914,7 +1914,7 @@ async function runNonMarca(brand,idx,classesRaw,modeOverride){
   buildCompareTab();
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Social for brand Ã¢â€â‚¬Ã¢â€â‚¬
+// ── Social for brand ──
 async function runSocialFor(brand,slug,idx){
   const body=document.getElementById('social-body-'+idx);
   if(body)body.innerHTML='<div class="empty-state">Verificando redes sociales...</div>';
@@ -1939,19 +1939,19 @@ async function runSocialFor(brand,slug,idx){
 }
 
 const SOCIAL_META={
-  github:{label:'GitHub',icon:'Ã°Å¸â€™Â»'},instagram:{label:'Instagram',icon:'Ã°Å¸â€œÂ¸'},
-  tiktok:{label:'TikTok',icon:'Ã°Å¸Å½Âµ'},youtube:{label:'YouTube',icon:'Ã¢â€“Â¶Ã¯Â¸Â'},
-  pinterest:{label:'Pinterest',icon:'Ã°Å¸â€œÅ’'},twitter_x:{label:'X/Twitter',icon:'Ã°Ââ€¢Â'},
-  linkedin:{label:'LinkedIn Co.',icon:'Ã°Å¸â€™Â¼'},threads:{label:'Threads',icon:'Ã°Å¸â€â€”'},
-  snapchat:{label:'Snapchat',icon:'Ã°Å¸â€˜Â»'},twitch:{label:'Twitch',icon:'Ã°Å¸Å½Â®'},
-  telegram:{label:'Telegram',icon:'Ã¢Å“Ë†Ã¯Â¸Â'},patreon:{label:'Patreon',icon:'Ã°Å¸Å½Â¨'},
-  substack:{label:'Substack',icon:'Ã°Å¸â€œÂ'},vimeo:{label:'Vimeo',icon:'Ã°Å¸Å½Â¬'},
-  spotify:{label:'Spotify',icon:'Ã°Å¸Å½Â§'},devto:{label:'Dev.to',icon:'Ã°Å¸â€˜Â¨Ã¢â‚¬ÂÃ°Å¸â€™Â»'},
-  mixcloud:{label:'Mixcloud',icon:'Ã°Å¸Å½â„¢Ã¯Â¸Â'},strava:{label:'Strava',icon:'Ã°Å¸ÂÆ’'},
-  discord:{label:'Discord',icon:'Ã°Å¸Å½Â®'},whatsapp:{label:'WhatsApp Ch.',icon:'Ã°Å¸â€™Â¬'},
-  line:{label:'Line',icon:'Ã°Å¸â€™Å¡'},meetup:{label:'Meetup',icon:'Ã°Å¸â€˜Â¥'},
-  goodreads:{label:'Goodreads',icon:'Ã°Å¸â€œÅ¡'},houzz:{label:'Houzz',icon:'Ã°Å¸ÂÂ '},
-  viber:{label:'Viber',icon:'Ã°Å¸â€œÅ¾'}
+  github:{label:'GitHub',icon:'💻'},instagram:{label:'Instagram',icon:'📸'},
+  tiktok:{label:'TikTok',icon:'🎵'},youtube:{label:'YouTube',icon:'▶️'},
+  pinterest:{label:'Pinterest',icon:'📌'},twitter_x:{label:'X/Twitter',icon:'𝕏'},
+  linkedin:{label:'LinkedIn Co.',icon:'💼'},threads:{label:'Threads',icon:'🔗'},
+  snapchat:{label:'Snapchat',icon:'👻'},twitch:{label:'Twitch',icon:'🎮'},
+  telegram:{label:'Telegram',icon:'✈️'},patreon:{label:'Patreon',icon:'🎨'},
+  substack:{label:'Substack',icon:'📝'},vimeo:{label:'Vimeo',icon:'🎬'},
+  spotify:{label:'Spotify',icon:'🎧'},devto:{label:'Dev.to',icon:'👨‍💻'},
+  mixcloud:{label:'Mixcloud',icon:'🎙️'},strava:{label:'Strava',icon:'🏃'},
+  discord:{label:'Discord',icon:'🎮'},whatsapp:{label:'WhatsApp Ch.',icon:'💬'},
+  line:{label:'Line',icon:'💚'},meetup:{label:'Meetup',icon:'👥'},
+  goodreads:{label:'Goodreads',icon:'📚'},houzz:{label:'Houzz',icon:'🏠'},
+  viber:{label:'Viber',icon:'📞'}
 };
 
 function renderSocialResults(results,idx){
@@ -1969,9 +1969,9 @@ function renderSocialResults(results,idx){
   if(badge){badge.style.display='';badge.textContent=avail+' disponibles';badge.style.cssText+=';background:var(--green-bg);border-color:var(--green-border);color:var(--green)';}
   body.innerHTML='<div class="tool-result-grid">'+
     entries.map(d=>{
-      const m=SOCIAL_META[d.platform]||{label:d.platform,icon:'Ã°Å¸â€â€”'};
+      const m=SOCIAL_META[d.platform]||{label:d.platform,icon:'🔗'};
       const cls=d.status==='disponible_probable'?'ok':d.status==='ocupado'?'taken':'unknown';
-      const txt=d.status==='disponible_probable'?'Ã¢Å“â€ Disponible':d.status==='ocupado'?'Ã¢Å“Ëœ Ocupado':'? Indeterm.';
+      const txt=d.status==='disponible_probable'?'✔ Disponible':d.status==='ocupado'?'✘ Ocupado':'? Indeterm.';
       return `<div class="tool-card">
         <div class="tc-platform">${m.icon} ${m.label}</div>
         <span class="avail-pill ${cls}">${txt}</span>
@@ -1980,7 +1980,7 @@ function renderSocialResults(results,idx){
     }).join('')+'</div>';
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Domain for brand Ã¢â€â‚¬Ã¢â€â‚¬
+// ── Domain for brand ──
 async function runDomainFor(brand,slug,idx){
   const body=document.getElementById('domain-body-'+idx);
   if(body)body.innerHTML='<div class="empty-state">Verificando dominios...</div>';
@@ -2010,12 +2010,12 @@ function renderDomainResults(rows,idx){
       const indet=r.Estado==='Indeterminado';
       return `<div class="domain-card" style="border-left:3px solid ${ok?'var(--green)':indet?'var(--orange)':'var(--red)'}">
         <div><div class="domain-name">${r.Dominio}</div></div>
-        <span class="avail-pill ${ok?'ok':indet?'unknown':'taken'}">${ok?'Ã¢Å“â€ Disponible':indet?'? Sin datos':'Ã¢Å“Ëœ Ocupado'}</span>
+        <span class="avail-pill ${ok?'ok':indet?'unknown':'taken'}">${ok?'✔ Disponible':indet?'? Sin datos':'✘ Ocupado'}</span>
       </div>`;
     }).join('')+'</div>';
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ MUA for brand Ã¢â€â‚¬Ã¢â€â‚¬
+// ── MUA for brand ──
 async function runMuaFor(brand,idx){
   const body=document.getElementById('mua-body-'+idx);
   if(body)body.innerHTML='<div class="empty-state">Consultando SIEM MUA...</div>';
@@ -2038,20 +2038,20 @@ function renderMuaResults(rows,idx,brand){
   if(rows.length===0||!rows[0].Error){
     if(badge){
       badge.style.display='';
-      if(!rows.length){badge.textContent='Ã¢Å“â€ Sin coincidencias';badge.style.cssText+=';background:var(--green-bg);border-color:var(--green-border);color:var(--green)';}
+      if(!rows.length){badge.textContent='✔ Sin coincidencias';badge.style.cssText+=';background:var(--green-bg);border-color:var(--green-border);color:var(--green)';}
       else{badge.textContent=rows.length+' similares';badge.style.cssText+=';background:var(--red-bg);border-color:var(--red-border);color:var(--red)';}
     }
   }
   if(!rows.length){
     body.innerHTML=`<div style="text-align:center;padding:24px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm)">
-      <div style="font-size:32px;margin-bottom:8px">Ã¢Å“â€</div>
+      <div style="font-size:32px;margin-bottom:8px">✔</div>
       <div style="font-size:14px;font-weight:600;color:var(--green)">Sin coincidencias en el MUA</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:6px">Ã‚Â«${brand}Ã‚Â» no aparece en el registro de empresas</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">«${brand}» no aparece en el registro de empresas</div>
     </div>`;
     return;
   }
   if(rows[0]?.Error){
-    body.innerHTML=`<div class="empty-state">Ã¢Å¡Â  ${rows[0].Error}</div>`;return;
+    body.innerHTML=`<div class="empty-state">⚠ ${rows[0].Error}</div>`;return;
   }
   const cols=Object.keys(rows[0]);
   let h=`<div class="tbl-wrap" style="margin-top:8px"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
@@ -2060,9 +2060,9 @@ function renderMuaResults(rows,idx,brand){
   body.innerHTML=h;
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-// SIGA Ã¢â‚¬â€ RASTREO DE OPOSICIÃƒâ€œN
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
+// SIGA — RASTREO DE OPOSICIÓN
+// ═══════════════════════════════════════════════════════════
 async function runSigaFor(brand,idx,classesRaw,modeOverride){
   const body=document.getElementById('siga-cf-body-'+idx);
   if(body)body.innerHTML='<div class="empty-state"><span class="spinner"></span> Consultando Gaceta Marcaria SIGA IMPI...</div>';
@@ -2073,17 +2073,17 @@ async function runSigaFor(brand,idx,classesRaw,modeOverride){
     const es=new EventSource('/siga_scan?'+params);
     es.addEventListener('log',e=>{
       const sub=document.getElementById('aas-siga-'+idx);
-      const cl=e.data.replace(/[Ã°Å¸â€œâ€¹Ã¢Å“â€¦Ã¢ÂÅ’Ã¢Å¡Â Ã¯Â¸Â]/g,'').trim();
+      const cl=e.data.replace(/[📋✅❌⚠️]/g,'').trim();
       if(sub&&cl.length>3)sub.textContent=cl.slice(0,80);
     });
     es.addEventListener('done',e=>{
       es.close();
       const d=JSON.parse(e.data);
       if(d.error){
-        if(body)body.innerHTML='<div class="empty-state">Ã¢Å¡Â  Error SIGA: '+d.error+'</div>';
+        if(body)body.innerHTML='<div class="empty-state">⚠ Error SIGA: '+d.error+'</div>';
         if(tbl)tbl.innerHTML='<div class="empty-state">Sin datos</div>';
         const badge=document.getElementById('aab-siga-'+idx);
-        if(badge){badge.style.display='';badge.textContent='Ã¢Å¡Â  Error';badge.style.cssText+=';background:var(--red-bg);border-color:var(--red-border);color:var(--red)';}
+        if(badge){badge.style.display='';badge.textContent='⚠ Error';badge.style.cssText+=';background:var(--red-bg);border-color:var(--red-border);color:var(--red)';}
         const sub=document.getElementById('aas-siga-'+idx);
         if(sub)sub.textContent='Error al conectar con SIGA IMPI';
         resolve(); return;
@@ -2094,7 +2094,7 @@ async function runSigaFor(brand,idx,classesRaw,modeOverride){
     });
     es.onerror=()=>{
       es.close();
-      if(body)body.innerHTML='<div class="empty-state">Ã¢Å¡Â  No se pudo conectar con SIGA</div>';
+      if(body)body.innerHTML='<div class="empty-state">⚠ No se pudo conectar con SIGA</div>';
       if(tbl)tbl.innerHTML='<div class="empty-state">Sin datos</div>';
       resolve();
     };
@@ -2130,8 +2130,8 @@ function renderSigaTab(idx,brand,d){
   const diasEl=document.getElementById('siga-period-dias-'+idx);
   if(banner&&(fechaMin||fechaMax)){
     banner.style.display='flex';
-    if(rangeEl)rangeEl.textContent=(fechaMin&&fechaMax&&fechaMin!==fechaMax)?fechaMin+' Ã¢â€ â€™ '+fechaMax:(fechaMin||fechaMax);
-    if(diasEl)diasEl.textContent='ÃƒÅ¡ltimos '+diasAtras+' dÃƒÂ­as Ã‚Â· '+d.total_registros+' solicitudes en Gaceta';
+    if(rangeEl)rangeEl.textContent=(fechaMin&&fechaMax&&fechaMin!==fechaMax)?fechaMin+' → '+fechaMax:(fechaMin||fechaMax);
+    if(diasEl)diasEl.textContent='Últimos '+diasAtras+' días · '+d.total_registros+' solicitudes en Gaceta';
   }
 
   // KPIs
@@ -2152,7 +2152,7 @@ function renderSigaTab(idx,brand,d){
 
   // Sub-label
   const sub=document.getElementById('aas-siga-'+idx);
-  if(sub)sub.textContent='SIGA Ã‚Â· '+rc.length+' solicitudes analizadas'+(fechaMax?' Ã‚Â· hasta '+fechaMax:'');
+  if(sub)sub.textContent='SIGA · '+rc.length+' solicitudes analizadas'+(fechaMax?' · hasta '+fechaMax:'');
 
   // Charts
   renderSigaStats(idx,rc);
@@ -2167,7 +2167,7 @@ function renderSigaTab(idx,brand,d){
   const badge=document.getElementById('aab-siga-'+idx);
   if(badge){
     badge.style.display='';
-    badge.textContent=hayFinal?'Ã¢Å“â€ Sin conflictos':'Ã¢Å¡Â  '+cf.length+' conflicto'+(cf.length!==1?'s':'');
+    badge.textContent=hayFinal?'✔ Sin conflictos':'⚠ '+cf.length+' conflicto'+(cf.length!==1?'s':'');
     const isOk=hayFinal;
     badge.style.cssText=badge.style.cssText+(isOk?';background:var(--green-bg);border-color:var(--green-border);color:var(--green)':';background:var(--red-bg);border-color:var(--red-border);color:var(--red)');
   }
@@ -2208,7 +2208,7 @@ function renderSigaPerClassStats(idx,riesgo){
     return{cls,rows,cf,pct:Math.round(pctR),pctLabel:cf.length===0?'0%':(Math.round(pctR)===0?'<1%':Math.round(pctR)+'%')};
   }).sort((a,b)=>a.pct-b.pct);
   const sub=document.getElementById('siga-cls-btn-sub-'+idx);
-  if(sub)sub.textContent='('+clsStats.length+' clases Ã‚Â· menorÃ¢â€ â€™mayor riesgo)';
+  if(sub)sub.textContent='('+clsStats.length+' clases · menor→mayor riesgo)';
   const grid=document.getElementById('siga-cls-grid-'+idx);
   if(!grid)return;
   grid.innerHTML=clsStats.map(({cls,rows,cf,pctLabel})=>`<div class="cls-stat-card">
@@ -2259,13 +2259,13 @@ function renderSigaConflicto(idx,brand,conflictoRows,riesgoRows,hasConc){
     const sub=document.getElementById('siga-cgs-sub-'+idx);
     if(hasConc){
       if(dot)dot.className='cgs-dot ok';
-      if(txt){txt.className='cgs-text ok';txt.textContent='Ã¢Å“â€ SIN CONFLICTOS EN PROCESO DE CONCESIÃƒâ€œN Ã¢â‚¬â€ Ã‚Â«'+brand+'Ã‚Â»';}
+      if(txt){txt.className='cgs-text ok';txt.textContent='✔ SIN CONFLICTOS EN PROCESO DE CONCESIÓN — «'+brand+'»';}
       if(sub)sub.textContent='No se identificaron oposiciones potenciales en la Gaceta Marcaria';
     } else {
       const cfCls=[...new Set(sigaClsData.filter(c=>c.hasConflict).map(c=>c.cls))].join(', ');
       if(dot)dot.className='cgs-dot nok';
-      if(txt){txt.className='cgs-text nok';txt.textContent='Ã¢Å¡â€“ OPOSICIÃƒâ€œN POTENCIAL EN CLASE '+cfCls+' Ã¢â‚¬â€ Ã‚Â«'+brand+'Ã‚Â»';}
-      if(sub)sub.textContent='Existen solicitudes en proceso que podrÃƒÂ­an oponerse al registro';
+      if(txt){txt.className='cgs-text nok';txt.textContent='⚖ OPOSICIÓN POTENCIAL EN CLASE '+cfCls+' — «'+brand+'»';}
+      if(sub)sub.textContent='Existen solicitudes en proceso que podrían oponerse al registro';
     }
   }
   const cnt=document.getElementById('siga-cnt-cf-'+idx);
@@ -2279,24 +2279,24 @@ function renderSigaConflicto(idx,brand,conflictoRows,riesgoRows,hasConc){
 
 function renderSigaSingleCard(cd){
   const cls=cd.hasConflict?'nok':'ok';
-  let h=`<div class="cls-card-single ${cls}"><div class="cls-card-hdr"><span class="cls-badge">CLASE ${cd.cls}</span><span class="cls-status ${cls}" style="font-size:12px;font-weight:600">${cd.hasConflict?'Ã¢Å¡â€“ OPOSICIÃƒâ€œN POTENCIAL':'Ã¢Å“â€ SIN CONFLICTOS'}</span></div>`;
+  let h=`<div class="cls-card-single ${cls}"><div class="cls-card-hdr"><span class="cls-badge">CLASE ${cd.cls}</span><span class="cls-status ${cls}" style="font-size:12px;font-weight:600">${cd.hasConflict?'⚖ OPOSICIÓN POTENCIAL':'✔ SIN CONFLICTOS'}</span></div>`;
   if(cd.marks.length){
-    h+=`<table class="cls-marks-table"><thead><tr><th>DenominaciÃƒÂ³n (SIGA)</th><th>Expediente</th><th>Criterios</th><th>Detalle</th></tr></thead><tbody>`;
+    h+=`<table class="cls-marks-table"><thead><tr><th>Denominación (SIGA)</th><th>Expediente</th><th>Criterios</th><th>Detalle</th></tr></thead><tbody>`;
     cd.marks.forEach(m=>{
       const cb=m.criterios>=3?'<span class="chip chip-red">'+m.criterios+'/4</span>':m.criterios>=2?'<span class="chip chip-orange">'+m.criterios+'/4</span>':'<span class="chip chip-blue">'+m.criterios+'/4</span>';
       h+=`<tr><td style="font-weight:600;color:var(--red)">${m.marca}</td><td class="mono" style="font-size:10px">${m.registro}</td><td>${cb}</td><td style="font-size:10px;color:var(--muted)">${m.criterios_txt}</td></tr>`;
     });
     h+='</tbody></table>';
-  } else {h+='<div style="padding:12px;font-size:12px;color:var(--green)">Ã¢Å“â€ Sin marcas en conflicto</div>';}
+  } else {h+='<div style="padding:12px;font-size:12px;color:var(--green)">✔ Sin marcas en conflicto</div>';}
   return h+'</div>';
 }
 
 const _sigaTickerIdx={}, _sigaTickerActive={}, _sigaClsData={};
 function renderSigaTicker(classArr,bidx){
   _sigaClsData[bidx]=classArr;
-  const cards=classArr.map((cd,i)=>{const cls=cd.hasConflict?'nok':'ok';return`<div class="cls-mini-card ${cls}" style="min-width:calc(33.33% - 7px)"><div class="cmc-clase">CLASE NIZA</div><div class="cmc-num">${cd.cls}</div><div class="cmc-status ${cls}">${cd.hasConflict?'Ã¢Å¡â€“ '+cd.marks.length+' OPOSICIÃƒâ€œN'+(cd.marks.length!==1?'ES':''):'Ã¢Å“â€ LIBRE'}</div><div class="cmc-count">${cd.hasConflict?'Criterios prom.: '+(cd.marks.length?Math.round(cd.marks.reduce((a,m)=>a+m.criterios,0)/cd.marks.length):0)+'/4':cd.total+' solicitudes'}</div></div>`}).join('');
+  const cards=classArr.map((cd,i)=>{const cls=cd.hasConflict?'nok':'ok';return`<div class="cls-mini-card ${cls}" style="min-width:calc(33.33% - 7px)"><div class="cmc-clase">CLASE NIZA</div><div class="cmc-num">${cd.cls}</div><div class="cmc-status ${cls}">${cd.hasConflict?'⚖ '+cd.marks.length+' OPOSICIÓN'+(cd.marks.length!==1?'ES':''):'✔ LIBRE'}</div><div class="cmc-count">${cd.hasConflict?'Criterios prom.: '+(cd.marks.length?Math.round(cd.marks.reduce((a,m)=>a+m.criterios,0)/cd.marks.length):0)+'/4':cd.total+' solicitudes'}</div></div>`}).join('');
   const dots=classArr.map((_,i)=>`<div class="t-dot${i===0?' active':''}" onclick="goSigaTicker(${i},${bidx})"></div>`).join('');
-  return`<div class="cls-ticker-wrap"><div class="cls-ticker-controls"><span class="cls-ticker-info">${classArr.length} clases Ã‚Â· ordenadas por riesgo Ã¢â€ â€˜</span><div class="cls-ticker-btns"><button class="btn-ticker" onclick="sigaTickerPrev(${bidx})">Ã¢â€ Â</button><button class="btn-ticker" onclick="sigaTickerNext(${bidx},false)">Ã¢â€ â€™</button><button class="btn-ver-todos" onclick="openSigaVtModal(${bidx})">Ã¢ËœÂ° VER TODOS</button></div></div><div class="cls-ticker-viewport" id="siga-tv-${bidx}"><div class="cls-ticker-track" id="siga-tt-${bidx}">${cards}</div></div><div class="cls-ticker-dots" id="siga-td-${bidx}">${dots}</div></div>`;
+  return`<div class="cls-ticker-wrap"><div class="cls-ticker-controls"><span class="cls-ticker-info">${classArr.length} clases · ordenadas por riesgo ↑</span><div class="cls-ticker-btns"><button class="btn-ticker" onclick="sigaTickerPrev(${bidx})">←</button><button class="btn-ticker" onclick="sigaTickerNext(${bidx},false)">→</button><button class="btn-ver-todos" onclick="openSigaVtModal(${bidx})">☰ VER TODOS</button></div></div><div class="cls-ticker-viewport" id="siga-tv-${bidx}"><div class="cls-ticker-track" id="siga-tt-${bidx}">${cards}</div></div><div class="cls-ticker-dots" id="siga-td-${bidx}">${dots}</div></div>`;
 }
 function initSigaTicker(bidx){if(_sigaTickerActive[bidx])clearInterval(_sigaTickerActive[bidx]);_sigaTickerIdx[bidx]=0;_sigaTickerActive[bidx]=setInterval(()=>sigaTickerNext(bidx,true),3500);}
 function _sigaTickerVis(bidx){const vp=document.getElementById('siga-tv-'+bidx);if(!vp)return 3;return vp.offsetWidth<600?1:vp.offsetWidth<900?2:3;}
@@ -2308,13 +2308,13 @@ function goSigaTicker(i,bidx){_sigaTickerIdx[bidx]=i;applySigaTicker(bidx);if(_s
 function openSigaVtModal(bidx){
   const cd=_sigaClsData[bidx]||[];
   const br=brandResults[bidx];
-  document.getElementById('vt-title').textContent='Ã‚Â«'+(br?br.brand:'')+'Ã‚Â» Ã¢â‚¬â€ SIGA Ã‚Â· Todas las Clases';
-  document.getElementById('vt-sub').textContent=cd.length+' clases Ã‚Â· Solicitudes en Proceso de ConcesiÃƒÂ³n';
+  document.getElementById('vt-title').textContent='«'+(br?br.brand:'')+'» — SIGA · Todas las Clases';
+  document.getElementById('vt-sub').textContent=cd.length+' clases · Solicitudes en Proceso de Concesión';
   document.getElementById('vt-grid').innerHTML=cd.map(item=>{
     const cls=item.hasConflict?'nok':'ok';
     let rows='';
     if(item.marks.length)rows=item.marks.map(m=>`<tr><td style="font-weight:600;color:var(--red)">${m.marca}</td><td style="font-size:10px">${m.registro}</td><td style="font-size:10px">SIGA</td></tr>`).join('');
-    return`<div class="vt-class-block ${cls}"><div class="vt-class-hdr"><span class="cls-badge">CLASE ${item.cls}</span><span class="vt-cls-status ${cls}">${item.hasConflict?'Ã¢Å¡â€“ OPOSICIÃƒâ€œN':'Ã¢Å“â€ LIBRE'}</span></div>${item.marks.length?`<table class="vt-table"><thead><tr><th>DenominaciÃƒÂ³n</th><th>Exp.</th><th>Origen</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="vt-empty">Ã¢Å“â€ Sin conflictos en proceso</div>'}</div>`;
+    return`<div class="vt-class-block ${cls}"><div class="vt-class-hdr"><span class="cls-badge">CLASE ${item.cls}</span><span class="vt-cls-status ${cls}">${item.hasConflict?'⚖ OPOSICIÓN':'✔ LIBRE'}</span></div>${item.marks.length?`<table class="vt-table"><thead><tr><th>Denominación</th><th>Exp.</th><th>Origen</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="vt-empty">✔ Sin conflictos en proceso</div>'}</div>`;
   }).join('');
   document.getElementById('vt-back').classList.add('show');
 }
@@ -2322,11 +2322,11 @@ function openSigaVtModal(bidx){
 function renderSigaRiesgoFor(idx,rows){
   const w=document.getElementById('siga-tbl-riesgo-'+idx); if(!w)return;
   document.getElementById('siga-cnt-riesgo-'+idx).textContent=rows.length+' solicitudes';
-  if(!rows.length){w.innerHTML='<div class="empty-state">Sin solicitudes en el perÃƒÂ­odo analizado para las clases seleccionadas</div>';return;}
-  let h=`<table><thead><tr><th>Clase</th><th>Expediente</th><th>DenominaciÃƒÂ³n (SIGA)</th><th>Fecha Circ.</th><th>Dist.</th><th>Sim.</th><th>P.Conf</th><th>P.Conc</th><th>Criterios</th><th>Detalle</th><th>Ã‚Â¿OposiciÃƒÂ³n?</th></tr></thead><tbody>`;
+  if(!rows.length){w.innerHTML='<div class="empty-state">Sin solicitudes en el período analizado para las clases seleccionadas</div>';return;}
+  let h=`<table><thead><tr><th>Clase</th><th>Expediente</th><th>Denominación (SIGA)</th><th>Fecha Circ.</th><th>Dist.</th><th>Sim.</th><th>P.Conf</th><th>P.Conc</th><th>Criterios</th><th>Detalle</th><th>¿Oposición?</th></tr></thead><tbody>`;
   rows.forEach(r=>{
     const ok=r['hay_concesion'];
-    const tag=ok?`<span class="tag-ok">Ã¢Å“â€ LIBRE</span>`:`<span class="tag-nok">Ã¢Å¡â€“ RIESGO Cl.${r['Clase']||'Ã¢â‚¬â€'}</span>`;
+    const tag=ok?`<span class="tag-ok">✔ LIBRE</span>`:`<span class="tag-nok">⚖ RIESGO Cl.${r['Clase']||'—'}</span>`;
     const ca=r['criterios_activos']??0;
     const ct=ca===0?`<span class="tag-ok">0</span>`:ca===1?`<span class="tag-warn">1</span>`:`<span class="tag-nok">${ca}</span>`;
     h+=`<tr><td class="mono">${r['Clase']??''}</td><td class="mono" style="font-size:10px">${r['Registro']??''}</td><td style="font-weight:${ok?'400':'600'};color:${ok?'inherit':'var(--red)'}">${r['Marca']??''}</td><td style="font-size:10px;color:var(--muted)">${r['FechaCirculacion']??''}</td><td>${pctChip(r['Distancia']??0,'dist')}</td><td>${pctChip(r['Similitud']??0,'sim')}</td><td>${pctChip(r['Prob_Conf']??0,'prob')}</td><td>${pctChip(r['Prob_Conc']??0,'')}</td><td style="text-align:center">${ct}</td><td style="font-size:10px;color:var(--muted)">${r['criterios_texto']??'Ninguno'}</td><td style="text-align:center">${tag}</td></tr>`;
@@ -2342,7 +2342,7 @@ function exportSigaFor(idx,type){
   const ts=new Date().toISOString().slice(0,10);
   let data,name;
   if(type==='riesgo'){
-    data=(sr.combined||[]).map(r=>({Clase:r.Clase,Expediente:r.Registro,Denominacion:r.Marca,FechaCirculacion:r.FechaCirculacion||'',Distancia:r.Distancia,Similitud:r.Similitud,Prob_Conf:r.Prob_Conf,Prob_Conc:r.Prob_Conc,Criterios:r.criterios_activos,Detalle:r.criterios_texto,Concesion:r.hay_concesion?'SÃƒÂ':'NO'}));
+    data=(sr.combined||[]).map(r=>({Clase:r.Clase,Expediente:r.Registro,Denominacion:r.Marca,FechaCirculacion:r.FechaCirculacion||'',Distancia:r.Distancia,Similitud:r.Similitud,Prob_Conf:r.Prob_Conf,Prob_Conc:r.Prob_Conc,Criterios:r.criterios_activos,Detalle:r.criterios_texto,Concesion:r.hay_concesion?'SÍ':'NO'}));
     name='SIGA_Riesgo_'+brand+'_'+ts+'.xlsx';
   } else if(type==='conflicto'){
     data=sr.conflicto||[];
@@ -2352,9 +2352,9 @@ function exportSigaFor(idx,type){
   const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,type.slice(0,31));XLSX.writeFile(wb,name);
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // PROGRESS HELPERS
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function renderSteps(idx,ss){
   const ps=document.getElementById('ps-'+idx);
   if(!ps)return;
@@ -2375,15 +2375,15 @@ function tickSteps(idx,ss,logText){
 function finishProg(idx,ss,hasError){
   const pw=document.getElementById('pw-'+idx),pb=document.getElementById('pb-'+idx),pl=document.getElementById('pl-'+idx);
   if(!pw)return;
-  if(hasError){if(pb){pb.style.background='var(--red)';pb.style.width='100%';}if(pl)pl.textContent='Ã¢ÂÅ’ Error en el anÃƒÂ¡lisis';STEPS.forEach(s=>{if(ss[s.id]==='active')ss[s.id]='error';});}
-  else{if(pb)pb.style.width='100%';if(pl)pl.textContent='Ã¢Å“â€ AnÃƒÂ¡lisis completado';STEPS.forEach(s=>{if(ss[s.id]!=='error')ss[s.id]='done';});}
+  if(hasError){if(pb){pb.style.background='var(--red)';pb.style.width='100%';}if(pl)pl.textContent='❌ Error en el análisis';STEPS.forEach(s=>{if(ss[s.id]==='active')ss[s.id]='error';});}
+  else{if(pb)pb.style.width='100%';if(pl)pl.textContent='✔ Análisis completado';STEPS.forEach(s=>{if(ss[s.id]!=='error')ss[s.id]='done';});}
   renderSteps(idx,ss);
   setTimeout(()=>{pw.style.opacity='0';pw.style.transition='opacity .5s';setTimeout(()=>pw.classList.remove('show'),500);},2000);
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // RENDER MARCA RESULTS
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function renderBrandTab(idx,brand,d){
   const expBtn=document.getElementById('exp-'+idx);
   if(expBtn)expBtn.style.display='block';
@@ -2428,7 +2428,7 @@ function renderBrandTab(idx,brand,d){
 
   // Update marca accordion badge
   const badge=document.getElementById('aab-marca-'+idx);
-  if(badge){badge.style.display='';badge.textContent=hay?'Ã¢Å“â€ Tu marca puede registrarse':'Ã¢Å¡Â  '+cf4+' conflicto'+(cf4!==1?'s':'')+' crÃƒÂ­tico'+(cf4!==1?'s':'');badge.style.cssText=badge.style.cssText+(hay?';background:var(--green-bg);border-color:var(--green-border);color:var(--green)':';background:var(--red-bg);border-color:var(--red-border);color:var(--red)');}
+  if(badge){badge.style.display='';badge.textContent=hay?'✔ Tu marca puede registrarse':'⚠ '+cf4+' conflicto'+(cf4!==1?'s':'')+' crítico'+(cf4!==1?'s':'');badge.style.cssText=badge.style.cssText+(hay?';background:var(--green-bg);border-color:var(--green-border);color:var(--green)':';background:var(--red-bg);border-color:var(--red-border);color:var(--red)');}
 
   updateStars();
 }
@@ -2446,8 +2446,8 @@ function renderOmpiFor(idx,rows){
   const w=document.getElementById('tbl-ompi-'+idx); if(!w)return;
   document.getElementById('cnt-ompi-'+idx).textContent=rows.length+' registros';
   if(!rows.length){w.innerHTML='<div class="empty-state">Sin resultados OMPI</div>';return;}
-  let h=`<table><thead><tr><th>Clase</th><th>N.Ã‚Â° Registro</th><th>Marca OMPI</th><th>SituaciÃƒÂ³n</th><th>Distancia</th><th>Similitud</th><th>Prob.Conf</th><th>Prob.Conc</th></tr></thead><tbody>`;
-  rows.forEach(r=>{h+=`<tr><td class="mono">${r['Clase Niza']??''}</td><td class="mono">${r['N.Ã‚Â°de reg.']??''}</td><td>${r['Marca']??''}</td><td>${r['SituaciÃƒÂ³n']??''}</td><td>${pctChip(r['Distancia']??0,'dist')}</td><td>${pctChip(r['Similitud']??0,'sim')}</td><td>${pctChip(r['Prob_Conf']??0,'prob')}</td><td>${pctChip(r['Prob_Conc']??0,'')}</td></tr>`;});
+  let h=`<table><thead><tr><th>Clase</th><th>N.° Registro</th><th>Marca OMPI</th><th>Situación</th><th>Distancia</th><th>Similitud</th><th>Prob.Conf</th><th>Prob.Conc</th></tr></thead><tbody>`;
+  rows.forEach(r=>{h+=`<tr><td class="mono">${r['Clase Niza']??''}</td><td class="mono">${r['N.°de reg.']??''}</td><td>${r['Marca']??''}</td><td>${r['Situación']??''}</td><td>${pctChip(r['Distancia']??0,'dist')}</td><td>${pctChip(r['Similitud']??0,'sim')}</td><td>${pctChip(r['Prob_Conf']??0,'prob')}</td><td>${pctChip(r['Prob_Conc']??0,'')}</td></tr>`;});
   w.innerHTML=h+'</tbody></table>';
 }
 function renderImpiFor(idx,rows){
@@ -2462,10 +2462,10 @@ function renderRiesgoFor(idx,rows){
   const w=document.getElementById('tbl-riesgo-'+idx); if(!w)return;
   document.getElementById('cnt-riesgo-'+idx).textContent=rows.length+' registros';
   if(!rows.length){w.innerHTML='<div class="empty-state">Sin datos</div>';return;}
-  let h=`<table><thead><tr><th>Origen</th><th>Clase</th><th>N.Ã‚Â°/Exp.</th><th>Marca</th><th>Dist.</th><th>Sim.</th><th>P.Conf</th><th>P.Conc</th><th>Criterios</th><th>Detalle</th><th>Ã‚Â¿ConcesiÃƒÂ³n?</th></tr></thead><tbody>`;
+  let h=`<table><thead><tr><th>Origen</th><th>Clase</th><th>N.°/Exp.</th><th>Marca</th><th>Dist.</th><th>Sim.</th><th>P.Conf</th><th>P.Conc</th><th>Criterios</th><th>Detalle</th><th>¿Concesión?</th></tr></thead><tbody>`;
   rows.forEach(r=>{
     const ok=r['hay_concesion'];
-    const tag=ok?`<span class="tag-ok">SÃƒÂ</span>`:`<span class="tag-nok">NO Ã‚Â· Cl.${r['Clase']||'Ã¢â‚¬â€'}</span>`;
+    const tag=ok?`<span class="tag-ok">SÍ</span>`:`<span class="tag-nok">NO · Cl.${r['Clase']||'—'}</span>`;
     const ca=r['criterios_activos']??0;
     const ct=ca===0?`<span class="tag-ok">0</span>`:ca===1?`<span class="tag-warn">1</span>`:`<span class="tag-nok">${ca}</span>`;
     h+=`<tr><td class="mono" style="font-size:10px">${r['Origen']??''}</td><td class="mono">${r['Clase']??''}</td><td class="mono" style="font-size:10px">${r['Registro']??''}</td><td>${r['Marca']??''}</td><td>${pctChip(r['Distancia']??0,'dist')}</td><td>${pctChip(r['Similitud']??0,'sim')}</td><td>${pctChip(r['Prob_Conf']??0,'prob')}</td><td>${pctChip(r['Prob_Conc']??0,'')}</td><td style="text-align:center">${ct}</td><td style="font-size:10px;color:var(--muted)">${r['criterios_texto']??'Ninguno'}</td><td style="text-align:center">${tag}</td></tr>`;
@@ -2473,7 +2473,7 @@ function renderRiesgoFor(idx,rows){
   w.innerHTML=h+'</tbody></table>';
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Conflicto (ticker / single card) Ã¢â€â‚¬Ã¢â€â‚¬
+// ── Conflicto (ticker / single card) ──
 // Only builds data for marks with 4/4 criteria
 function buildClassData(conflictoRows,riesgoRows){
   const allCls=[...new Set(riesgoRows.map(r=>String(r.Clase||'')).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
@@ -2502,21 +2502,21 @@ function renderConflictoFor(idx,brand,rows,riesgoRows,hasConc){
     const dot=document.getElementById('cgs-dot-'+idx), txt=document.getElementById('cgs-txt-'+idx), sub=document.getElementById('cgs-sub-'+idx);
     if(hasConc){
       if(dot)dot.className='cgs-dot ok';
-      if(txt){txt.className='cgs-text ok';txt.textContent='Ã¢Å“â€ TU MARCA PUEDE REGISTRARSE Ã¢â‚¬â€ Ã‚Â«'+brand+'Ã‚Â»';}
+      if(txt){txt.className='cgs-text ok';txt.textContent='✔ TU MARCA PUEDE REGISTRARSE — «'+brand+'»';}
       if(sub)sub.textContent='No se encontraron marcas en conflicto directo ante el IMPI';
     } else {
       const cfCls=[...new Set(cd.filter(c=>c.hasConflict).map(c=>c.cls))].join(', ');
       if(dot)dot.className='cgs-dot nok';
-      if(txt){txt.className='cgs-text nok';txt.textContent='Ã¢Å¡Â  EXISTEN CONFLICTOS EN CLASE '+cfCls+' Ã¢â‚¬â€ Ã‚Â«'+brand+'Ã‚Â»';}
-      if(sub)sub.textContent='Se recomienda revisiÃƒÂ³n con un abogado de marcas';
+      if(txt){txt.className='cgs-text nok';txt.textContent='⚠ EXISTEN CONFLICTOS EN CLASE '+cfCls+' — «'+brand+'»';}
+      if(sub)sub.textContent='Se recomienda revisión con un abogado de marcas';
     }
   }
   const cnt=document.getElementById('cnt-cf-'+idx);
-  if(cnt)cnt.textContent=cf4Count+' marca'+(cf4Count!==1?'s':'')+' con conflicto mÃƒÂ¡ximo (4/4)';
+  if(cnt)cnt.textContent=cf4Count+' marca'+(cf4Count!==1?'s':'')+' con conflicto máximo (4/4)';
   if(!cd.length){w.innerHTML='<div class="empty-state">Sin clases analizadas</div>';return;}
   const cdWithConflicts=cd.filter(c=>c.marks.length>0);
   if(!cdWithConflicts.length){
-    w.innerHTML='<div style="text-align:center;padding:32px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm)"><div style="font-size:32px;margin-bottom:10px">Ã¢Å“â€</div><div style="font-size:15px;font-weight:700;color:var(--green)">Sin conflictos crÃƒÂ­ticos (4/4) ante el IMPI</div><div style="font-size:12px;color:var(--muted);margin-top:8px">No se encontraron marcas con los 4 criterios de conflicto simultÃƒÂ¡neos</div></div>';
+    w.innerHTML='<div style="text-align:center;padding:32px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm)"><div style="font-size:32px;margin-bottom:10px">✔</div><div style="font-size:15px;font-weight:700;color:var(--green)">Sin conflictos críticos (4/4) ante el IMPI</div><div style="font-size:12px;color:var(--muted);margin-top:8px">No se encontraron marcas con los 4 criterios de conflicto simultáneos</div></div>';
     return;
   }
   if(cdWithConflicts.length===1){w.innerHTML='<div style="padding:16px">'+renderSingleCard(cdWithConflicts[0])+'</div>';return;}
@@ -2525,20 +2525,20 @@ function renderConflictoFor(idx,brand,rows,riesgoRows,hasConc){
 }
 function renderSingleCard(cd){
   const cls=cd.hasConflict?'nok':'ok';
-  let h=`<div class="cls-card-single ${cls}"><div class="cls-card-hdr"><span class="cls-badge">CLASE ${cd.cls}</span><span class="cls-status ${cls}" style="font-size:12px;font-weight:600">${cd.hasConflict?'Ã¢Å¡Â  EXISTEN CONFLICTOS (4/4)':'Ã¢Å“â€ SIN CONFLICTOS CRÃƒÂTICOS'}</span></div>`;
+  let h=`<div class="cls-card-single ${cls}"><div class="cls-card-hdr"><span class="cls-badge">CLASE ${cd.cls}</span><span class="cls-status ${cls}" style="font-size:12px;font-weight:600">${cd.hasConflict?'⚠ EXISTEN CONFLICTOS (4/4)':'✔ SIN CONFLICTOS CRÍTICOS'}</span></div>`;
   if(cd.marks.length){
-    h+=`<table class="cls-marks-table"><thead><tr><th>Marca en Conflicto</th><th>N.Ã‚Â° Expediente</th><th>Nota</th></tr></thead><tbody>`;
+    h+=`<table class="cls-marks-table"><thead><tr><th>Marca en Conflicto</th><th>N.° Expediente</th><th>Nota</th></tr></thead><tbody>`;
     cd.marks.forEach(m=>{
       h+=`<tr><td style="font-weight:700;color:var(--red)">${m.marca}</td><td class="mono" style="font-size:10px">${m.registro}</td><td><span style="color:var(--red);font-weight:700;font-size:11px;letter-spacing:.5px">YA EXISTE</span></td></tr>`;
     });
     h+='</tbody></table>';
-  } else {h+='<div style="padding:12px;font-size:12px;color:var(--green)">Ã¢Å“â€ Sin marcas con conflicto mÃƒÂ¡ximo</div>';}
+  } else {h+='<div style="padding:12px;font-size:12px;color:var(--green)">✔ Sin marcas con conflicto máximo</div>';}
   return h+'</div>';
 }
 function renderTicker(classArr,bidx){
-  const cards=classArr.map((cd,i)=>{const cls=cd.hasConflict?'nok':'ok';return`<div class="cls-mini-card ${cls}" style="min-width:calc(33.33% - 7px)"><div class="cmc-clase">CLASE NIZA</div><div class="cmc-num">${cd.cls}</div><div class="cmc-status ${cls}">${cd.hasConflict?'Ã¢Å¡Â  '+cd.marks.length+' CONFLICTO'+(cd.marks.length!==1?'S':'')+' (4/4)':'Ã¢Å“â€ SIN CONFLICTOS'}</div><div class="cmc-count">${cd.hasConflict?cd.marks.length+' marca'+(cd.marks.length!==1?'s':'')+' con conflicto mÃƒÂ¡ximo':cd.total+' marcas analizadas'}</div></div>`}).join('');
+  const cards=classArr.map((cd,i)=>{const cls=cd.hasConflict?'nok':'ok';return`<div class="cls-mini-card ${cls}" style="min-width:calc(33.33% - 7px)"><div class="cmc-clase">CLASE NIZA</div><div class="cmc-num">${cd.cls}</div><div class="cmc-status ${cls}">${cd.hasConflict?'⚠ '+cd.marks.length+' CONFLICTO'+(cd.marks.length!==1?'S':'')+' (4/4)':'✔ SIN CONFLICTOS'}</div><div class="cmc-count">${cd.hasConflict?cd.marks.length+' marca'+(cd.marks.length!==1?'s':'')+' con conflicto máximo':cd.total+' marcas analizadas'}</div></div>`}).join('');
   const dots=classArr.map((_,i)=>`<div class="t-dot${i===0?' active':''}" onclick="goTicker(${i},${bidx})"></div>`).join('');
-  return`<div class="cls-ticker-wrap"><div class="cls-ticker-controls"><span class="cls-ticker-info">${classArr.length} clases con conflictos Ã‚Â· criterios 4/4</span><div class="cls-ticker-btns"><button class="btn-ticker" onclick="tickerPrev(${bidx})">Ã¢â€ Â</button><button class="btn-ticker" onclick="tickerNext(${bidx},false)">Ã¢â€ â€™</button><button class="btn-ver-todos" onclick="openVtModal(${bidx})">Ã¢ËœÂ° VER TODOS</button></div></div><div class="cls-ticker-viewport" id="tv-${bidx}"><div class="cls-ticker-track" id="tt-${bidx}">${cards}</div></div><div class="cls-ticker-dots" id="td-${bidx}">${dots}</div></div>`;
+  return`<div class="cls-ticker-wrap"><div class="cls-ticker-controls"><span class="cls-ticker-info">${classArr.length} clases con conflictos · criterios 4/4</span><div class="cls-ticker-btns"><button class="btn-ticker" onclick="tickerPrev(${bidx})">←</button><button class="btn-ticker" onclick="tickerNext(${bidx},false)">→</button><button class="btn-ver-todos" onclick="openVtModal(${bidx})">☰ VER TODOS</button></div></div><div class="cls-ticker-viewport" id="tv-${bidx}"><div class="cls-ticker-track" id="tt-${bidx}">${cards}</div></div><div class="cls-ticker-dots" id="td-${bidx}">${dots}</div></div>`;
 }
 function initTicker(bidx){if(_activeTickerByBrand[bidx])clearInterval(_activeTickerByBrand[bidx]);_tickerIdxByBrand[bidx]=0;_activeTickerByBrand[bidx]=setInterval(()=>tickerNext(bidx,true),3500);}
 function tickerVis(bidx){const vp=document.getElementById('tv-'+bidx);if(!vp)return 3;return vp.offsetWidth<600?1:vp.offsetWidth<900?2:3;}
@@ -2547,17 +2547,17 @@ function tickerNext(bidx,auto){const cd=_classDataByBrand[bidx]||[];let pos=_tic
 function tickerPrev(bidx){let pos=_tickerIdxByBrand[bidx]||0;if(pos>0){_tickerIdxByBrand[bidx]=pos-1;applyTicker(bidx);}}
 function goTicker(i,bidx){_tickerIdxByBrand[bidx]=i;applyTicker(bidx);if(_activeTickerByBrand[bidx]){clearInterval(_activeTickerByBrand[bidx]);_activeTickerByBrand[bidx]=setInterval(()=>tickerNext(bidx,true),3500);}}
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Ver Todos Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Ver Todos ───
 function openVtModal(bidx){
   const cd=_classDataByBrand[bidx]||[];
   const br=brandResults[bidx];
-  document.getElementById('vt-title').textContent='Ã‚Â«'+(br?br.brand:'')+'Ã‚Â» Ã¢â‚¬â€ Todas las Clases';
-  document.getElementById('vt-sub').textContent=cd.length+' clases analizadas Ã‚Â· ordenadas por riesgo Ã¢â€ â€˜';
+  document.getElementById('vt-title').textContent='«'+(br?br.brand:'')+'» — Todas las Clases';
+  document.getElementById('vt-sub').textContent=cd.length+' clases analizadas · ordenadas por riesgo ↑';
   document.getElementById('vt-grid').innerHTML=cd.map(item=>{
     const cls=item.hasConflict?'nok':'ok';
     let rows='';
     if(item.marks.length)rows=item.marks.map(m=>`<tr><td style="font-weight:600;color:var(--red)">${m.marca}</td><td style="font-size:10px">${m.registro}</td><td style="font-size:10px">${m.origen}</td></tr>`).join('');
-    return`<div class="vt-class-block ${cls}"><div class="vt-class-hdr"><span class="cls-badge">CLASE ${item.cls}</span><span class="vt-cls-status ${cls}">${item.hasConflict?'Ã¢Å“Ëœ CONFLICTOS':'Ã¢Å“â€ LIBRE'}</span></div>${item.marks.length?`<table class="vt-table"><thead><tr><th>Marca</th><th>Reg.</th><th>Origen</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="vt-empty">Ã¢Å“â€ Sin conflictos</div>'}</div>`;
+    return`<div class="vt-class-block ${cls}"><div class="vt-class-hdr"><span class="cls-badge">CLASE ${item.cls}</span><span class="vt-cls-status ${cls}">${item.hasConflict?'✘ CONFLICTOS':'✔ LIBRE'}</span></div>${item.marks.length?`<table class="vt-table"><thead><tr><th>Marca</th><th>Reg.</th><th>Origen</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="vt-empty">✔ Sin conflictos</div>'}</div>`;
   }).join('');
   document.getElementById('vt-back').classList.add('show');
 }
@@ -2566,9 +2566,9 @@ function openCritModal(){document.getElementById('crit-back').classList.add('sho
 function closeCritModal(e){if(e.target===document.getElementById('crit-back'))document.getElementById('crit-back').classList.remove('show');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('vt-back').classList.remove('show');document.getElementById('crit-back').classList.remove('show');}});
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // STATS / CHARTS
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 const doughnutCenter={id:'dc',afterDraw(chart){const d=chartCenterText[chart.canvas.id];if(!d||chart.config.type!=='doughnut')return;const{ctx,chartArea}=chart;if(!chartArea)return;const cx=(chartArea.left+chartArea.right)/2,cy=(chartArea.top+chartArea.bottom)/2;ctx.save();ctx.font="700 18px 'IBM Plex Mono',monospace";ctx.fillStyle='#0f1f3d';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(d.line1,cx,cy-6);ctx.font="300 9px 'IBM Plex Mono',monospace";ctx.fillStyle='#6b7a9a';ctx.fillText(String(d.line2).toUpperCase(),cx,cy+9);ctx.restore();}};
 Chart.register(doughnutCenter);
 function mkChart(id,cfg){if(chartInstances[id])chartInstances[id].destroy();const c=document.getElementById(id);if(!c)return null;const ch=new Chart(c.getContext('2d'),cfg);chartInstances[id]=ch;return ch;}
@@ -2591,7 +2591,7 @@ function renderStats(idx,ompi,impi,riesgo){
   riesgo.forEach(r=>buckets[Math.min(r.criterios_activos??0,4)]++);
   mkChart('chart-crit-'+idx,{type:'bar',data:{labels:['0','1','2','3','4'],datasets:[{data:buckets,backgroundColor:[CCC.green,CCC.muted,CCC.orange,CCC.red,CCC.red],borderRadius:4}]},options:{...BOPTS,scales:{x:{ticks:{color:'#6b7a9a',font:{size:9,family:'IBM Plex Mono'}},grid:{color:CCC.grid},title:{display:true,text:'Criterios activos',color:'#6b7a9a',font:{size:9}}},y:{ticks:{color:'#6b7a9a',font:{size:9,family:'IBM Plex Mono'}},grid:{color:CCC.grid},beginAtZero:true}},plugins:{...BOPTS.plugins,legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y} marcas`}}}}});
 
-  // Conflict doughnut Ã¢â‚¬â€ ensure visible red slice when conflicts > 0
+  // Conflict doughnut — ensure visible red slice when conflicts > 0
   const minSlice=riesgo.length*0.03; // at least 3% visually
   const dispConflicts=conflicts>0?Math.max(conflicts,minSlice):0;
   const dispClean=riesgo.length-dispConflicts;
@@ -2616,7 +2616,7 @@ function renderPerClassStats(idx,riesgo){
     return{cls,rows,cf,pct:Math.round(pctR),pctLabel:cf.length===0?'0%':(Math.round(pctR)===0?'<1%':Math.round(pctR)+'%')};
   }).sort((a,b)=>a.pct-b.pct);
   const sub=document.getElementById('cls-btn-sub-'+idx);
-  if(sub)sub.textContent='('+clsStats.length+' clases Ã‚Â· menorÃ¢â€ â€™mayor riesgo)';
+  if(sub)sub.textContent='('+clsStats.length+' clases · menor→mayor riesgo)';
   const grid=document.getElementById('cls-grid-'+idx);
   if(!grid)return;
   grid.innerHTML=clsStats.map(({cls,rows,cf,pctLabel})=>`<div class="cls-stat-card">
@@ -2647,9 +2647,9 @@ function toggleClsStats(idx){
   },100);
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // COMPARE TAB
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function buildCompareTab(){
   const brKeys=Object.keys(brandResults);
   if(!brKeys.length)return;
@@ -2660,7 +2660,7 @@ function buildCompareTab(){
   if(existing)existing.remove();
   const tab=document.createElement('div');
   tab.className='btab compare';tab.id='btab-compare';
-  tab.innerHTML='Ã°Å¸â€œÅ  ComparaciÃƒÂ³n';
+  tab.innerHTML='📊 Comparación';
   tab.onclick=switchToCompare;
   bar.appendChild(tab);
 }
@@ -2669,7 +2669,7 @@ function buildCompareView(){
   const ca=document.getElementById('compare-area');
   if(!ca)return;
   ca.style.display='block';
-  ca.innerHTML=`<div class="section-label" style="margin-top:4px;margin-bottom:16px">ComparaciÃƒÂ³n EstadÃƒÂ­stica Marcaria</div>
+  ca.innerHTML=`<div class="section-label" style="margin-top:4px;margin-bottom:16px">Comparación Estadística Marcaria</div>
   <div class="compare-grid">${brKeys.map(i=>{
     const br=brandResults[i];
     const riesgo=br.riesgoComputed||br.riesgo||[];
@@ -2685,15 +2685,15 @@ function buildCompareView(){
       return{cls,cf,total:rws.length,p};
     }).sort((a,b)=>a.p-b.p):'';
     return`<div class="cmp-card">
-      <div class="cmp-brand"><span>${pctRaw===0?'Ã¢Å“â€':'Ã¢Å“Ëœ'}</span>${br.brand}</div>
-      <div class="cmp-meta">${(br.ompi||[]).length} OMPI Ã‚Â· ${(br.impi||[]).length} IMPI Ã‚Â· ${classes.length} clase${classes.length!==1?'s':''}</div>
+      <div class="cmp-brand"><span>${pctRaw===0?'✔':'✘'}</span>${br.brand}</div>
+      <div class="cmp-meta">${(br.ompi||[]).length} OMPI · ${(br.impi||[]).length} IMPI · ${classes.length} clase${classes.length!==1?'s':''}</div>
       <div style="position:relative;height:150px;margin-bottom:4px"><canvas id="cmp-c-${i}"></canvas></div>
       <div class="cmp-kpis">
         <div class="cmp-kpi"><div class="cmp-kpi-num ${pctRaw>50?'r':pctRaw>0?'':'g'}">${pctLabel}</div><div class="cmp-kpi-lbl">% Riesgo</div></div>
         <div class="cmp-kpi"><div class="cmp-kpi-num">${riesgo.length}</div><div class="cmp-kpi-lbl">Analizadas</div></div>
         <div class="cmp-kpi"><div class="cmp-kpi-num ${conflicts>0?'r':'g'}">${conflicts}</div><div class="cmp-kpi-lbl">Conflictos</div></div>
       </div>
-      ${multiClass?`<button class="cmp-drill-btn" id="cmp-db-${i}" onclick="toggleDrill(${i})">Ã¢â€“Â¾ Desglose por clase (${classes.length})</button>
+      ${multiClass?`<button class="cmp-drill-btn" id="cmp-db-${i}" onclick="toggleDrill(${i})">▾ Desglose por clase (${classes.length})</button>
       <div class="cmp-drill-body" id="cmp-dd-${i}">
         ${clsRows?clsRows.map(({cls,cf,total,p})=>`<div class="cmp-cls-row"><span class="cmp-cls-badge">Cl.${cls}</span><div class="cmp-bar-wrap"><div class="cmp-bar-fill ${cf>0?'nok':'ok'}" style="width:${p}%"></div></div><span class="cmp-pct" style="color:${cf>0?'var(--red)':'var(--green)'}">${p}%</span><span class="cmp-count">${cf}/${total}</span></div>`).join(''):''}
       </div>`:''
@@ -2719,12 +2719,12 @@ function toggleDrill(i){
   if(!btn||!body)return;
   const open=body.classList.toggle('open');
   btn.classList.toggle('open',open);
-  btn.innerHTML=(open?'Ã¢â€“Â´':'Ã¢â€“Â¾')+' Desglose por clase ('+body.querySelectorAll('.cmp-cls-row').length+')';
+  btn.innerHTML=(open?'▴':'▾')+' Desglose por clase ('+body.querySelectorAll('.cmp-cls-row').length+')';
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // EXPORT
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function exportFor(idx,type){
   const br=brandResults[idx];
   if(!br){showToast('Sin datos','info');return;}
@@ -2733,7 +2733,7 @@ function exportFor(idx,type){
   let data,name;
   if(type==='ompi'){data=br.ompi||[];name='OMPI_'+brand+'_'+ts+'.xlsx';}
   else if(type==='impi'){data=br.impi||[];name='IMPI_'+brand+'_'+ts+'.xlsx';}
-  else if(type==='riesgo'){data=(br.riesgoComputed||br.riesgo||[]).map(r=>({Origen:r.Origen,Clase:r.Clase,Registro:r.Registro,Marca:r.Marca,Distancia:r.Distancia,Similitud:r.Similitud,Prob_Conf:r.Prob_Conf,Prob_Conc:r.Prob_Conc,Criterios:r.criterios_activos,Detalle:r.criterios_texto,Concesion:r.hay_concesion?'SÃƒÂ':'NO'}));name='Riesgo_'+brand+'_'+ts+'.xlsx';}
+  else if(type==='riesgo'){data=(br.riesgoComputed||br.riesgo||[]).map(r=>({Origen:r.Origen,Clase:r.Clase,Registro:r.Registro,Marca:r.Marca,Distancia:r.Distancia,Similitud:r.Similitud,Prob_Conf:r.Prob_Conf,Prob_Conc:r.Prob_Conc,Criterios:r.criterios_activos,Detalle:r.criterios_texto,Concesion:r.hay_concesion?'SÍ':'NO'}));name='Riesgo_'+brand+'_'+ts+'.xlsx';}
   else if(type==='conflicto'){data=br.conflictoComputed||br.conflicto||[];name='Conflictos_'+brand+'_'+ts+'.xlsx';}
   if(!data||!data.length){showToast('Sin datos para exportar','info');return;}
   const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,type.slice(0,31));XLSX.writeFile(wb,name);
@@ -2783,28 +2783,28 @@ function exportAll(idx){
   const brand=((br?.brand)||'marca').replace(/\s+/g,'_');
   const ts=new Date().toISOString().slice(0,10);
   const wb=XLSX.utils.book_new();
-  // Hoja 1 Ã¢â‚¬â€ Conflictos IMPI
+  // Hoja 1 — Conflictos IMPI
   const cf=br?.conflictoComputed||br?.conflicto||[];
   if(cf.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cf),'Conflictos_IMPI');
-  // Hoja 2 Ã¢â‚¬â€ Redes Sociales
+  // Hoja 2 — Redes Sociales
   const sd=socialResultsData[idx];
   if(sd&&Object.keys(sd).length){
     const rows=Object.values(sd).map(d=>({Plataforma:d.platform,Estado:d.status==='disponible_probable'?'Disponible':d.status==='ocupado'?'Ocupado':'Indeterminado',URL:d.url||''}));
     if(rows.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Redes_Sociales');
   }
-  // Hoja 3 Ã¢â‚¬â€ Dominios
+  // Hoja 3 — Dominios
   const dd=domainResultsData[idx];
   if(dd&&dd.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dd),'Dominios');
-  // Hoja 4 Ã¢â‚¬â€ MUA
+  // Hoja 4 — MUA
   const md=muaResultsData[idx];
   if(md&&md.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(md),'MUA_Empresas');
   if(!wb.SheetNames.length){showToast('Sin datos para exportar','info');return;}
   XLSX.writeFile(wb,'ThinkLAB_'+brand+'_'+ts+'.xlsx');
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // TOAST & UTILS
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 function showToast(msg,type='warn'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast '+(type==='info'?'info':'');
@@ -2818,7 +2818,7 @@ function toggleNotaLegal(){
   chev.classList.toggle('open');
 }
 function iniciarNuevo(){
-  if(!confirm('Ã‚Â¿Iniciar nuevo proceso? Los resultados actuales no guardados se perderÃƒÂ¡n.'))return;
+  if(!confirm('¿Iniciar nuevo proceso? Los resultados actuales no guardados se perderán.'))return;
   brandResults={};brandList=[''];selectedClases=[];perBrandMode=false;selectedMode='T';
   clearGiro();
   renderBrandList();renderFavGrid();
@@ -2837,9 +2837,9 @@ function iniciarNuevo(){
 // Init
 renderBrandList(); renderFavGrid(); updateFavBadge();
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // SUPABASE AUTH
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 let _authUser = null;
 
 function toggleAuthPanel(){
@@ -2864,21 +2864,21 @@ function updateAuthUI(user){
     if(msgEl){ msgEl.textContent = ''; msgEl.className = 'auth-msg'; }
     // Sync favorites with user account if available
     const localFavs = JSON.parse(localStorage.getItem('tim_fav') || '[]');
-    if(localFavs.length) showToast('SesiÃƒÂ³n iniciada Ã¢â‚¬â€ tus marcas guardadas estÃƒÂ¡n disponibles','info');
+    if(localFavs.length) showToast('Sesión iniciada — tus marcas guardadas están disponibles','info');
   } else {
-    if(btn){ btn.textContent = 'Iniciar SesiÃƒÂ³n'; btn.classList.remove('logged'); }
+    if(btn){ btn.textContent = 'Iniciar Sesión'; btn.classList.remove('logged'); }
     if(guest) guest.style.display = 'block';
     if(userDiv) userDiv.style.display = 'none';
   }
 }
 
 async function registerUser(){
-  if(!sbClient){ showToast('Servicio de autenticaciÃƒÂ³n no disponible'); return; }
+  if(!sbClient){ showToast('Servicio de autenticación no disponible'); return; }
   const email = document.getElementById('auth-email').value.trim();
   const pass  = document.getElementById('auth-password').value.trim();
   const msg   = document.getElementById('auth-msg');
-  if(!email || !pass){ if(msg){msg.textContent='Completa correo y contraseÃƒÂ±a';msg.className='auth-msg err';} return; }
-  if(pass.length < 6){ if(msg){msg.textContent='La contraseÃƒÂ±a debe tener al menos 6 caracteres';msg.className='auth-msg err';} return; }
+  if(!email || !pass){ if(msg){msg.textContent='Completa correo y contraseña';msg.className='auth-msg err';} return; }
+  if(pass.length < 6){ if(msg){msg.textContent='La contraseña debe tener al menos 6 caracteres';msg.className='auth-msg err';} return; }
   if(msg){msg.textContent='Registrando...';msg.className='auth-msg';}
   const { data, error } = await sbClient.auth.signUp({
     email, password: pass,
@@ -2888,16 +2888,16 @@ async function registerUser(){
     if(msg){msg.textContent=error.message;msg.className='auth-msg err';}
     return;
   }
-  if(msg){msg.textContent='Ã¢Å“â€ Registro enviado. Revisa tu correo para confirmar tu cuenta.';msg.className='auth-msg ok';}
+  if(msg){msg.textContent='✔ Registro enviado. Revisa tu correo para confirmar tu cuenta.';msg.className='auth-msg ok';}
   if(data.user) updateAuthUI(data.user);
 }
 
 async function loginUser(){
-  if(!sbClient){ showToast('Servicio de autenticaciÃƒÂ³n no disponible'); return; }
+  if(!sbClient){ showToast('Servicio de autenticación no disponible'); return; }
   const email = document.getElementById('auth-email').value.trim();
   const pass  = document.getElementById('auth-password').value.trim();
   const msg   = document.getElementById('auth-msg');
-  if(!email || !pass){ if(msg){msg.textContent='Completa correo y contraseÃƒÂ±a';msg.className='auth-msg err';} return; }
+  if(!email || !pass){ if(msg){msg.textContent='Completa correo y contraseña';msg.className='auth-msg err';} return; }
   if(msg){msg.textContent='Verificando...';msg.className='auth-msg';}
   const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
   if(error){
@@ -2913,7 +2913,7 @@ async function logoutUser(){
   if(!sbClient) return;
   await sbClient.auth.signOut();
   updateAuthUI(null);
-  showToast('SesiÃƒÂ³n cerrada','info');
+  showToast('Sesión cerrada','info');
 }
 
 async function initAuth(){
@@ -2937,9 +2937,9 @@ document.addEventListener('click', e => {
 
 initAuth();
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 // REGISTRATION GATE
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ═══════════════════════════════════════════════════════════
 (function(){
   const gate    = document.getElementById('reg-gate');
   const iframe  = document.getElementById('reg-iframe');
@@ -2947,13 +2947,13 @@ initAuth();
   const thanks  = document.getElementById('reg-thanks');
   if(!gate || !iframe) return;
 
-  // Usuario ya registrado Ã¢â€ â€™ quitar gate inmediatamente
+  // Usuario ya registrado → quitar gate inmediatamente
   if(localStorage.getItem('tim_registered') === '1'){
     gate.classList.add('done');
     return;
   }
 
-  // Bloquear scroll del fondo mientras el gate estÃƒÂ¡ activo
+  // Bloquear scroll del fondo mientras el gate está activo
   document.body.style.overflow = 'hidden';
 
   // Bloquear tecla Escape para que no pueda esquivar el modal
@@ -2968,10 +2968,10 @@ initAuth();
   iframe.addEventListener('load', function(){
     loadCount++;
     if(loadCount === 1){
-      // Primera carga: formulario listo Ã¢â€ â€™ ocultar spinner
+      // Primera carga: formulario listo → ocultar spinner
       loading.classList.add('hidden');
     } else {
-      // Segunda carga: usuario enviÃƒÂ³ el formulario Ã¢â€ â€™ mostrar gracias
+      // Segunda carga: usuario envió el formulario → mostrar gracias
       iframe.style.display = 'none';
       thanks.classList.add('show');
     }
@@ -2994,7 +2994,7 @@ function enterApp(){
 </html>
 """
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─────────────────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
@@ -3036,35 +3036,35 @@ def stream():
             )
 
             classes = parse_classes(mode, classes_raw)
-            q.put(("log", f"  Clases Ã¢â€ â€™ {classes}"))
+            q.put(("log", f"  Clases → {classes}"))
 
-            q.put(("log", "Ã°Å¸â€Â§ Entrenando modelo de similitud..."))
+            q.put(("log", "🔧 Entrenando modelo de similitud..."))
             model = train_model(1000)
-            q.put(("log", "Ã¢Å“â€¦ Modelo listo."))
+            q.put(("log", "✅ Modelo listo."))
 
             ompi_rows_raw = []
             if not skip_ompi:
-                q.put(("log", "Ã°Å¸Å’Â Iniciando scraping OMPI / Madrid Monitor..."))
+                q.put(("log", "🌐 Iniciando scraping OMPI / Madrid Monitor..."))
                 try:
                     ompi_rows_raw = scrape_ompi(brand, classes, headless=not headed)
-                    q.put(("log", f"   Ã¢â€ â€™ {len(ompi_rows_raw)} registros OMPI encontrados."))
+                    q.put(("log", f"   → {len(ompi_rows_raw)} registros OMPI encontrados."))
                 except Exception as e:
-                    q.put(("log", f"Ã¢Å¡Â Ã¯Â¸Â  Error OMPI: {e}"))
+                    q.put(("log", f"⚠️  Error OMPI: {e}"))
             else:
-                q.put(("log", "Ã¢ÂÂ­  OMPI omitida por configuraciÃƒÂ³n."))
+                q.put(("log", "⏭  OMPI omitida por configuración."))
 
             for r in ompi_rows_raw:
                 metrics = compute_metrics(brand, r["Marca"], model)
                 ompi_enriched.append({**r, **metrics})
 
             if not skip_impi:
-                q.put(("log", "Ã°Å¸Å’Â Iniciando scraping IMPI / Marcanet..."))
+                q.put(("log", "🌐 Iniciando scraping IMPI / Marcanet..."))
                 impi_rows = scrape_impi(brand, classes, model)
-                q.put(("log", f"   Ã¢â€ â€™ {len(impi_rows)} registros IMPI encontrados."))
+                q.put(("log", f"   → {len(impi_rows)} registros IMPI encontrados."))
             else:
-                q.put(("log", "Ã¢ÂÂ­  IMPI omitida por configuraciÃƒÂ³n."))
+                q.put(("log", "⏭  IMPI omitida por configuración."))
 
-            # Construir combined + anÃƒÂ¡lisis de riesgo
+            # Construir combined + análisis de riesgo
             for r in ompi_enriched:
                 ev = evaluar_criterios(
                     r.get("Distancia", 0), r.get("Similitud", 0),
@@ -3072,7 +3072,7 @@ def stream():
                 )
                 combined.append({
                     "Origen": "OMPI", "Clase": r.get("Clase Niza", ""),
-                    "Registro": r.get("N.Ã‚Â°de reg.", ""), "Marca": r.get("Marca", ""),
+                    "Registro": r.get("N.°de reg.", ""), "Marca": r.get("Marca", ""),
                     "Distancia": r.get("Distancia", 0), "Similitud": r.get("Similitud", 0),
                     "Prob_Conf": r.get("Prob_Conf", 0), "Prob_Conc": r.get("Prob_Conc", 0),
                     **ev
@@ -3118,14 +3118,14 @@ def stream():
             out_dir = Path(__file__).parent / "outputs"
             out_dir.mkdir(exist_ok=True)
             out_file = str(out_dir / f"analisis_{brand.replace(' ','_')}_{ts}.xlsx")
-            q.put(("log", "Ã°Å¸â€œÅ  Generando Excel completo..."))
+            q.put(("log", "📊 Generando Excel completo..."))
             build_excel(brand, ompi_rows_raw, impi_rows, out_file, model)
-            q.put(("log", f"Ã¢Å“â€¦ Archivo guardado: {Path(out_file).name}"))
+            q.put(("log", f"✅ Archivo guardado: {Path(out_file).name}"))
 
         except Exception as e:
             import traceback
             error = str(e)
-            q.put(("log", f"Ã¢ÂÅ’ Error crÃƒÂ­tico: {e}"))
+            q.put(("log", f"❌ Error crítico: {e}"))
             q.put(("log", traceback.format_exc()))
         finally:
             sys.stdout = orig_out
@@ -3150,7 +3150,7 @@ def stream():
                 if etype == "done":
                     break
             except queue.Empty:
-                yield "event: log\ndata: Ã¢Å¡Â Ã¯Â¸Â  Timeout esperando respuesta.\n\n"
+                yield "event: log\ndata: ⚠️  Timeout esperando respuesta.\n\n"
                 break
 
     return Response(
@@ -3168,11 +3168,11 @@ def download():
     return send_file(str(p), as_attachment=True, download_name=p.name)
 
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ showExtraTools trigger Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─── showExtraTools trigger ──────────────────────────────────
 # Called from JS after brand analysis completes.
-# (No backend needed Ã¢â‚¬â€ JS handles it via renderBrandResults hook)
+# (No backend needed — JS handles it via renderBrandResults hook)
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Social media availability check Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─── Social media availability check ─────────────────────────
 @app.route("/social_check")
 def social_check():
     username_raw = request.args.get("username", "").strip()
@@ -3242,7 +3242,7 @@ def social_check():
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Domain availability check (static common TLDs) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─── Domain availability check (static common TLDs) ──────────
 @app.route("/domain_check")
 def domain_check():
     term = request.args.get("term", "").strip().lower()
@@ -3261,18 +3261,18 @@ def domain_check():
     def check_domain(domain):
         """
         Dual-method domain availability check:
-        1. DNS lookup  Ã¢â‚¬â€ if resolves Ã¢â€ â€™ registered (most reliable signal)
-        2. HTTP HEAD   Ã¢â‚¬â€ if 200 or parking-page pattern Ã¢â€ â€™ registered
+        1. DNS lookup  — if resolves → registered (most reliable signal)
+        2. HTTP HEAD   — if 200 or parking-page pattern → registered
         Fallback rule: prefer "No disponible" when uncertain (avoid false positives).
         """
         import requests as _req
 
-        # Ã¢â€â‚¬Ã¢â€â‚¬ Method 1: DNS resolution Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+        # ── Method 1: DNS resolution ──────────────────────────
         dns_resolved = False
         dns_nxdomain  = False
         try:
             _socket.getaddrinfo(domain, None, _socket.AF_UNSPEC, _socket.SOCK_STREAM)
-            dns_resolved = True  # domain has DNS records Ã¢â€ â€™ registered
+            dns_resolved = True  # domain has DNS records → registered
         except _socket.gaierror as e:
             msg = str(e.args[1]).lower() if len(e.args) > 1 else ""
             # NXDOMAIN signals: "name or service not known", "non-existent domain"
@@ -3285,11 +3285,11 @@ def domain_check():
         if dns_resolved:
             return {"Dominio": domain, "Estado": "No disponible"}
 
-        # Ã¢â€â‚¬Ã¢â€â‚¬ Method 2: HTTP check (catches registered domains with parking pages) Ã¢â€â‚¬Ã¢â€â‚¬
+        # ── Method 2: HTTP check (catches registered domains with parking pages) ──
         # Registered domains often resolve via registrar nameservers even when
         # the domain itself has no A-record for the www hostname.
-        # A 200 response Ã¢â€ â€™ active server Ã¢â€ â€™ definitely registered.
-        # Connection refused / timeout Ã¢â€ â€™ could be either; use as secondary signal.
+        # A 200 response → active server → definitely registered.
+        # Connection refused / timeout → could be either; use as secondary signal.
         http_status = None
         try:
             HDR = {"User-Agent": "Mozilla/5.0 (compatible; TIM-checker/1.0)"}
@@ -3306,7 +3306,7 @@ def domain_check():
         if http_status == 200:
             return {"Dominio": domain, "Estado": "No disponible"}
 
-        # Ã¢â€â‚¬Ã¢â€â‚¬ Decision logic Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+        # ── Decision logic ────────────────────────────────────
         # dns_nxdomain = strong signal of availability
         # conn_refused / timeout with no DNS = probably available
         # any other http error = treat as indeterminate
@@ -3321,7 +3321,7 @@ def domain_check():
             domain = term_clean + tld
             row = check_domain(domain)
             rows.append(row)
-            _t.sleep(0.05)   # DNS is much faster than HTTP Ã¢â‚¬â€ short pause only
+            _t.sleep(0.05)   # DNS is much faster than HTTP — short pause only
         yield "event: result\ndata: " + _json.dumps(rows, ensure_ascii=False) + "\n\n"
         yield "event: done\ndata: ok\n\n"
 
@@ -3329,14 +3329,14 @@ def domain_check():
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MUA business name check Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─── MUA business name check ──────────────────────────────────
 @app.route("/mua_check")
 def mua_check():
     term = request.args.get("term", "").strip()
     import json as _json, time as _t
 
     def generate():
-        yield 'event: progress\ndata: ' + _json.dumps({'pct':10,'msg':'Iniciando navegador...'}) + '\n\n'
+        yield 'event: progress\ndata: ' + _json.dumps({'pct':10,'msg':'Iniciando navegador Edge...'}) + '\n\n'
         _t.sleep(0.5)
         try:
             from selenium import webdriver
@@ -3360,7 +3360,7 @@ def mua_check():
             URL = "https://mua.economia.gob.mx/mua-web/showAutorizadasHome"
             driver.get(URL)
 
-            yield 'event: progress\ndata: ' + _json.dumps({'pct':50,'msg':'Buscando denominaciÃƒÂ³n...'}) + '\n\n'
+            yield 'event: progress\ndata: ' + _json.dumps({'pct':50,'msg':'Buscando denominación...'}) + '\n\n'
 
             wait = WebDriverWait(driver, 25)
             campo = wait.until(EC.element_to_be_clickable((By.ID, "razonSocial")))
@@ -3407,7 +3407,7 @@ def mua_check():
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
-# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ SIGA Ã¢â‚¬â€ Rastreo de OposiciÃƒÂ³n / Gaceta Marcaria Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+# ─── SIGA — Rastreo de Oposición / Gaceta Marcaria ───────────
 @app.route("/siga_scan")
 def siga_scan():
     brand       = request.args.get("brand", "").strip()
@@ -3440,11 +3440,11 @@ def siga_scan():
             from ORCH_ONE import train_model, compute_metrics, evaluar_criterios
 
             classes = parse_classes(mode, classes_raw)
-            q.put(("log", f"Ã°Å¸â€œâ€¹ SIGA: Marca Ã¢â€ â€™ Ã‚Â«{brand}Ã‚Â» Ã‚Â· Clases Niza Ã¢â€ â€™ {classes}"))
+            q.put(("log", f"📋 SIGA: Marca → «{brand}» · Clases Niza → {classes}"))
 
-            q.put(("log", "Ã°Å¸â€Â§ SIGA: Entrenando modelo de similitud..."))
+            q.put(("log", "🔧 SIGA: Entrenando modelo de similitud..."))
             model = train_model(1000)
-            q.put(("log", "Ã¢Å“â€¦ SIGA: Modelo listo."))
+            q.put(("log", "✅ SIGA: Modelo listo."))
 
             # Scrape SIGA
             registros = scrape_siga(
@@ -3455,11 +3455,11 @@ def siga_scan():
             )
 
             total_registros = len(registros)
-            q.put(("log", f"Ã°Å¸â€œâ€¹ SIGA: {total_registros} registros obtenidos. Aplicando anÃƒÂ¡lisis ML..."))
+            q.put(("log", f"📋 SIGA: {total_registros} registros obtenidos. Aplicando análisis ML..."))
 
-            # Compute date range from Fecha CirculaciÃƒÂ³n
-            fechas_raw = [r.get("Fecha CirculaciÃƒÂ³n", "") for r in registros
-                          if r.get("Fecha CirculaciÃƒÂ³n") and r.get("Fecha CirculaciÃƒÂ³n") != "N/A"]
+            # Compute date range from Fecha Circulación
+            fechas_raw = [r.get("Fecha Circulación", "") for r in registros
+                          if r.get("Fecha Circulación") and r.get("Fecha Circulación") != "N/A"]
             if fechas_raw:
                 fechas_sorted = sorted(set(fechas_raw))
                 fecha_min = fechas_sorted[0]
@@ -3467,7 +3467,7 @@ def siga_scan():
 
             # Apply ML metrics + criteria evaluation
             for r in registros:
-                marca_siga = r.get("DenominaciÃƒÂ³n", "").strip()
+                marca_siga = r.get("Denominación", "").strip()
                 if not marca_siga:
                     continue
                 try:
@@ -3481,8 +3481,8 @@ def siga_scan():
                         "Clase":             r.get("Clase", ""),
                         "Registro":          r.get("Expediente", ""),
                         "Marca":             marca_siga,
-                        "FechaCirculacion":  r.get("Fecha CirculaciÃƒÂ³n", ""),
-                        "FechaPresentacion": r.get("Fecha PresentaciÃƒÂ³n", ""),
+                        "FechaCirculacion":  r.get("Fecha Circulación", ""),
+                        "FechaPresentacion": r.get("Fecha Presentación", ""),
                         "Gaceta":            r.get("Gaceta", ""),
                         "Distancia":         metrics.get("Distancia", 0),
                         "Similitud":         metrics.get("Similitud", 0),
@@ -3520,18 +3520,18 @@ def siga_scan():
                 if combined else True
             )
 
-            q.put(("log", f"Ã¢Å“â€¦ SIGA: AnÃƒÂ¡lisis completo Ã¢â‚¬â€ {len(conflicto)} posibles conflictos detectados."))
+            q.put(("log", f"✅ SIGA: Análisis completo — {len(conflicto)} posibles conflictos detectados."))
 
         except Exception as e:
             import traceback
             tb = traceback.format_exc()
             e_type = type(e).__name__
-            # Selenium exceptions embed a full ChromeDriver stacktrace after "Stacktrace:" Ã¢â‚¬â€ strip it
+            # Selenium exceptions embed a full ChromeDriver stacktrace after "Stacktrace:" — strip it
             raw_msg = str(e).strip()
             e_msg = raw_msg.split("Stacktrace:")[0].strip()
             e_msg = e_msg.removeprefix("Message:").strip() or None
             error = f"{e_type}: {e_msg}" if e_msg else e_type
-            q.put(("log", f"Ã¢ÂÅ’ SIGA Error ({e_type}): {e_msg or '(sin mensaje)'}"))
+            q.put(("log", f"❌ SIGA Error ({e_type}): {e_msg or '(sin mensaje)'}"))
             q.put(("log", tb))
         finally:
             q.put(("done", json.dumps({
@@ -3555,7 +3555,7 @@ def siga_scan():
                 if etype == "done":
                     break
             except queue.Empty:
-                yield "event: log\ndata: Ã¢Å¡Â Ã¯Â¸Â SIGA: Timeout.\n\n"
+                yield "event: log\ndata: ⚠️ SIGA: Timeout.\n\n"
                 break
 
     return Response(
@@ -3566,7 +3566,7 @@ def siga_scan():
 
 if __name__ == "__main__":
     print("=" * 55)
-    print("  Trademark Insights MÃƒÂ©xico Ã¢â‚¬â€ powered by markum")
+    print("  Trademark Insights México — powered by markum")
     print("  Abre en tu navegador: http://localhost:5050")
     print("=" * 55)
     port = int(os.environ.get("PORT", 5050))
